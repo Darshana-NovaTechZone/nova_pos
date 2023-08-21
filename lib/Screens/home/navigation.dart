@@ -4,7 +4,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:nova_pos/Screens/Splash/splash.dart';
 import 'package:nova_pos/Screens/Splash/testing.dart';
 import 'package:nova_pos/Screens/get_details/get_deatails.dart';
-import 'package:nova_pos/Screens/home/product.dart';
+import 'package:nova_pos/Screens/home/product/product.dart';
 import 'package:nova_pos/Screens/home/summery.dart';
 import 'package:nova_pos/Screens/home/today.dart';
 import 'package:nova_pos/color/colors.dart';

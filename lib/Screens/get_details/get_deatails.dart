@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nova_pos/Screens/home/navigation.dart';
 import 'package:nova_pos/color/colors.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/custom_textfield.dart';
@@ -143,6 +145,7 @@ class _GetDetailsState extends State<GetDetails> {
                       color: Color.fromARGB(255, 104, 234, 108),
                       buttonHeight: h / 14,
                       onTap: () {
+                        createFolder();
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Navigation()),
@@ -172,5 +175,26 @@ class _GetDetailsState extends State<GetDetails> {
         ),
       ),
     );
+  }
+
+  Future<String> createFolder() async {
+    final dir = Directory((Platform.isAndroid
+                ? await getExternalStorageDirectory() //FOR ANDROID
+                : await getApplicationSupportDirectory() //FOR IOS
+            )!
+            .path +
+        '/img');
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    if ((await dir.exists())) {
+      print(dir.path);
+      return dir.path;
+    } else {
+      dir.create();
+      print('bvbvfvfv f');
+      return dir.path;
+    }
   }
 }

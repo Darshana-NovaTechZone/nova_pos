@@ -41,7 +41,7 @@ class _SummeryState extends State<Summery> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Sumery",
+                  "SumMery",
                   style: TextStyle(fontSize: 17.sp, color: Color(0xff1a6216), fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -95,7 +95,7 @@ class _SummeryState extends State<Summery> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.calendar_today,
+                          Icons.inventory,
                           color: Color(0xff757575),
                           size: 19.sp,
                         ),

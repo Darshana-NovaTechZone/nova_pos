@@ -43,6 +43,15 @@ dependencies:
   tutorial: ^1.0.9
   circular_reveal_animation: ^2.0.1
   url_launcher: ^6.1.12
+  sqflite: ^2.3.0
+  page_transition: ^2.0.9
+  image_picker: ^1.0.2
+  simple_barcode_scanner: ^0.0.8
+  permission_handler: ^10.4.3
+  path_provider: ^2.1.0
+  textfield_search: ^0.10.0
+  path: ^1.8.3
+ 
 
 dev_dependencies:
   flutter_test:

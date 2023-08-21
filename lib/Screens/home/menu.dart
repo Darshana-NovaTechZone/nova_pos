@@ -48,7 +48,7 @@ class _MenuState extends State<Menu> {
       },
       {
         "icon": Icon(
-          Icons.clear_all,
+          Icons.square_foot_outlined,
           color: Color(0xff737373),
         ),
         "text": "Unit"
