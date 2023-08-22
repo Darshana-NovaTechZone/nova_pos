@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:nova_pos/Screens/home/product/add_category.dart';
+import 'package:nova_pos/Screens/home/product/edit_product/edit_product.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../../color/colors.dart';
 import '../../../db/sqldb.dart';
 import 'add_product.dart';
 
@@ -19,28 +18,37 @@ class Product extends StatefulWidget {
 
 class _ProductState extends State<Product> {
   SqlDb sqlDb = SqlDb();
-  List product = [];
-    final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> product = [];
+  List<Map<String, dynamic>> allProduct = [];
+  final TextEditingController _searchController = TextEditingController();
   loadData() async {
-    List data = await sqlDb.readData("Select * from add_product ");
-    print(data);
+    allProduct = await sqlDb.readData("Select * from add_product ");
+    print(allProduct);
 
     setState(() {
-      product = data;
+      product = allProduct;
     });
   }
 
-  final List<String> _results = [];
-
-  void _handleSearch(String input) {
-    _results.clear();
-    for (var str in product) {
-      if (str.toLowerCase().contains(input.toLowerCase())) {
-        setState(() {
-          _results.add(str);
-        });
-      }
+  // This function is called whenever the text field changes
+  void _runFilter(String enteredKeyword) {
+    List<Map<String, dynamic>> results = [];
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = allProduct;
+    } else if (allProduct.where((user) => user["product_name"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList().isNotEmpty) {
+      results = allProduct.where((user) => user["product_name"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList();
+    } else if (allProduct.where((user) => user["barcode"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList().isNotEmpty) {
+      results = allProduct.where((user) => user["barcode"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList();
+    } else if (allProduct.where((user) => user["sku"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList().isNotEmpty) {
+      results = allProduct.where((user) => user["sku"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList();
     }
+
+    // Refresh the UI
+    setState(() {
+      product = results;
+      print(product);
+    });
   }
 
   @override
@@ -54,7 +62,6 @@ class _ProductState extends State<Product> {
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
     var w = MediaQuery.of(context).size.width;
-    var p = MediaQuery.paddingOf(context).top;
     return Scaffold(
       backgroundColor: Color(0xfff8f8f8),
       appBar: AppBar(
@@ -95,7 +102,7 @@ class _ProductState extends State<Product> {
             child: SizedBox(
               height: h / 15,
               child: TextField(
-                onChanged: _handleSearch,
+                onChanged: (value) => _runFilter(value),
                 controller: _searchController,
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
@@ -136,11 +143,13 @@ class _ProductState extends State<Product> {
       body: SizedBox(
           width: w,
           child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                product.isEmpty
-                    ? Column(
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
+              product.isEmpty
+                  ? SizedBox(
+                      height: h / 1.5,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset("assets/q.PNG"),
                           Padding(
@@ -151,84 +160,113 @@ class _ProductState extends State<Product> {
                             ),
                           ),
                         ],
-                      )
-                    : Align(
-                        alignment: Alignment.topCenter,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          reverse: true,
-                          dragStartBehavior: DragStartBehavior.down,
-                          itemCount: product.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          height: 50,
-                                          width: 50,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadiusDirectional.circular(10),
-                                            child: product[index]['img'] == ""
-                                                ? Image.asset("assets/q.PNG")
-                                                : Image.file(
-                                                    File('/storage/emulated/0/Android/data/com.example.nova_pos/files/img/${product[index]['img']}'),
-                                                    fit: BoxFit.fill,
-                                                  ),
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.topCenter,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        reverse: true,
+                        dragStartBehavior: DragStartBehavior.down,
+                        itemCount: product.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    duration: Duration(milliseconds: 400),
+                                    child: Edit_product(
+                                      img: '${product[index]['img']}',
+                                      loadData: loadData,
+                                      barcode: product[index]['barcode'].toString(),
+                                      cName: product[index]['pro_cat'].toString(),
+                                      cost: product[index]['product_cost'].toString(),
+                                      pName: product[index]['product_name'].toString(),
+                                      salePrice: product[index]['sales_prise'].toString(),
+                                      sku: product[index]['sku'].toString(),
+                                      unit: product[index]['unit'].toString(),
+                                      proId: product[index]['id'].toString(),
+                                    ),
+                                    inheritTheme: true,
+                                    ctx: context),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            height: 50,
+                                            width: 50,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadiusDirectional.circular(10),
+                                              child: product[index]['img'] == ""
+                                                  ? Image.asset("assets/q.PNG")
+                                                  : Image.file(
+                                                      File(
+                                                          '/storage/emulated/0/Android/data/com.example.nova_pos/files/img/${product[index]['img']}'),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              product[index]['product_name'],
-                                              style: TextStyle(fontSize: 12.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                                              decoration:
-                                                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: Color.fromARGB(255, 185, 185, 182)),
-                                              child: Text(
-                                                product[index]['pro_cat'],
-                                                style: TextStyle(
-                                                    fontSize: 8.sp, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.normal),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                product[index]['product_name'],
+                                                style: TextStyle(fontSize: 12.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          "\$ ${product[index]['sales_prise']}",
-                                          style: TextStyle(fontSize: 12.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          "unliited",
-                                          style: TextStyle(fontSize: 8.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.normal),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  color: Color.fromARGB(255, 213, 210, 210),
-                                )
-                              ],
-                            );
-                          },
-                        ),
-                      )
-              ]),
-            ),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                decoration:
+                                                    BoxDecoration(borderRadius: BorderRadius.circular(5), color: Color.fromARGB(255, 185, 185, 182)),
+                                                child: Text(
+                                                  product[index]['pro_cat'],
+                                                  style: TextStyle(
+                                                      fontSize: 8.sp, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.normal),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "\$ ${product[index]['sales_prise']}",
+                                            style: TextStyle(fontSize: 12.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            "unlimited",
+                                            style: TextStyle(fontSize: 8.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.normal),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Divider(
+                                    color: Color.fromARGB(255, 213, 210, 210),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+            ]),
           )),
     );
   }

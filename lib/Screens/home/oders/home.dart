@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nova_pos/Screens/home/oders/add_transaction/add_transaction.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
 class Home extends StatefulWidget {
@@ -77,33 +79,46 @@ class _HomeState extends State<Home> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Container(
-            height: h / 9,
-            width: w,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: const Color(0xff9ab0ea),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    duration: Duration(milliseconds: 400),
+                    child: AddTransaction(),
+                    inheritTheme: true,
+                    ctx: context),
+              );
+            },
+            child: Container(
+              height: h / 9,
+              width: w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: const Color(0xff9ab0ea),
+              ),
+              child: Row(children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(Icons.shopping_cart_outlined, color: Color(0xff29395b)),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "New Order",
+                      style: TextStyle(fontSize: 11.sp, color: Color(0xff29395b), fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Create new transaction with products",
+                      style: TextStyle(fontSize: 11.sp, color: Color(0xff405587)),
+                    ),
+                  ],
+                ),
+              ]),
             ),
-            child: Row(children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.shopping_cart_outlined, color: Color(0xff29395b)),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "New Order",
-                    style: TextStyle(fontSize: 11.sp, color: Color(0xff29395b), fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Create new transaction with products",
-                    style: TextStyle(fontSize: 11.sp, color: Color(0xff405587)),
-                  ),
-                ],
-              ),
-            ]),
           ),
         ),
         SizedBox(

@@ -12,7 +12,7 @@ import 'package:nova_pos/widgets/mainButton.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../widgets/home_button.dart';
-import 'home.dart';
+import 'oders/home.dart';
 import 'menu.dart';
 
 class Navigation extends StatefulWidget {

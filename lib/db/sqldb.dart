@@ -127,11 +127,11 @@ class SqlDb {
   )
  ''');
     await db.execute('''
-  CREATE TABLE "myStatus" (
+  CREATE TABLE "cart" (
     "id" INTEGER  NOT NULL PRIMARY KEY  ,
-     "s_id" TEXT NOT NULL,
-      "name" TEXT NOT NULL,
-     "date" TEXT NOT NULL
+     "p_name" TEXT NOT NULL,
+      "c_name" TEXT NOT NULL,
+     "quantity" TEXT NOT NULL
 
    
      

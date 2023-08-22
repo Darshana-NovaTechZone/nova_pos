@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.1"
+  combined_barcode_scanner:
+    dependency: "direct main"
+    description:
+      name: combined_barcode_scanner
+      sha256: "32c84592febd2a66971ac93f62e7221a62255b7c41c3db1b418c03975e37c473"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1-dev.1"
   concentric_transition:
     dependency: "direct main"
     description:
@@ -73,6 +81,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  expandable_bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: expandable_bottom_sheet
+      sha256: d62455231ccd53bf7a153c87e2cdecd2c8e7d737cb5262a5fc9481c5e3aed7d1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1+1"
+  extended_masked_text:
+    dependency: "direct main"
+    description:
+      name: extended_masked_text
+      sha256: dba132fffa2b931e8cdd005e0509dfac359d3f98a175eca18c0ac71605247b6b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.1"
   fake_async:
     dependency: transitive
     description:
@@ -127,7 +151,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_barcode_scanner:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_barcode_scanner
       sha256: a4ba37daf9933f451a5e812c753ddd045d6354e4a3280342d895b07fecaab3fa
@@ -288,6 +312,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.1"
   intro_screen_onboarding_flutter:
     dependency: "direct main"
     description:

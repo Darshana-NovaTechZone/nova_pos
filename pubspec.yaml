@@ -51,6 +51,12 @@ dependencies:
   path_provider: ^2.1.0
   textfield_search: ^0.10.0
   path: ^1.8.3
+  intl: ^0.18.1
+  extended_masked_text: ^2.3.1
+  flutter_barcode_scanner: ^2.0.0
+  combined_barcode_scanner: ^0.0.1-dev.1
+  expandable_bottom_sheet: ^1.1.1+1
+
  
 
 dev_dependencies:

@@ -1,38 +1,55 @@
 import 'dart:io';
 
-import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nova_pos/color/colors.dart';
 import 'package:nova_pos/widgets/custom_textfield.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:sizer/sizer.dart';
 import 'package:path/path.dart';
+import '../../../../db/sqldb.dart';
+import '../../../../widgets/mainButton.dart';
+import '../add_unit/add_unit.dart';
+import '../dropdown/select_category.dart';
 
-import '../../../class/curruncy.dart';
-import '../../../db/sqldb.dart';
-import '../../../widgets/mainButton.dart';
-import 'add_unit/add_unit.dart';
-import 'dropdown/select_category.dart';
-
-class AddProduct extends StatefulWidget {
-  const AddProduct({super.key, required this.loadData});
+class Edit_product extends StatefulWidget {
+  Edit_product(
+      {super.key,
+      required this.loadData,
+      required this.barcode,
+      required this.pName,
+      required this.cName,
+      required this.sku,
+      required this.cost,
+      required this.salePrice,
+      required this.proId,
+      required this.img,
+      required this.unit});
   final Function loadData;
+  final String pName;
+  final String cName;
+  final String sku;
+  final String barcode;
+  final String salePrice;
+  final String unit;
+  final String cost;
+  final String proId;
+  String img;
 
   @override
-  State<AddProduct> createState() => _AddProductState();
+  State<Edit_product> createState() => _Edit_productState();
 }
 
-class _AddProductState extends State<AddProduct> with SingleTickerProviderStateMixin {
+class _Edit_productState extends State<Edit_product> with SingleTickerProviderStateMixin {
   TextEditingController productName = TextEditingController();
   TextEditingController catName = TextEditingController(text: "Unclassified");
   TextEditingController sku = TextEditingController();
   TextEditingController barcode = TextEditingController();
-  final salePrice = MoneyMaskedTextController(initialValue: 0);
+  TextEditingController salePrice = TextEditingController(text: "0");
   TextEditingController unit = TextEditingController(text: "pcs");
-  final productCost = MoneyMaskedTextController(initialValue: 0);
+  TextEditingController productCost = TextEditingController(text: "0");
+
   TabController? _tabController;
   bool setpro = false;
   bool variant = false;
@@ -43,6 +60,9 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
   int _currentTabIndex = 0;
   bool tabEnd = false;
   String imgName = "";
+  String path = "/storage/emulated/0/Android/data/com.example.nova_pos/files/img/";
+  String proImg = "";
+  bool myimg = false;
 
   final ImagePicker picker = ImagePicker();
 
@@ -51,6 +71,20 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
   List catList = [];
 
   int value = Colors.red.value;
+  getdata() {
+    setState(() {
+      productName.text = widget.pName;
+      catName.text = widget.cName;
+      sku.text = widget.sku;
+      salePrice.text = widget.salePrice;
+
+      unit.text = widget.unit;
+      productCost.text = widget.cost;
+      proImg = "/storage/emulated/0/Android/data/com.example.nova_pos/files/img/${widget.img}";
+      imgName = widget.img;
+      result = widget.barcode;
+    });
+  }
 
   getCategory() async {
     catList = await sqlDb.readData("Select * from add_cat ");
@@ -67,6 +101,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
 
   @override
   void initState() {
+    getdata();
     getCategory();
     super.initState();
     _tabController = new TabController(
@@ -113,7 +148,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
             appBar: AppBar(
               backgroundColor: Color(0xff93dc8a),
               title: Text(
-                "Add Product",
+                "Edit_product",
                 style: TextStyle(fontSize: 17.sp, color: Color(0xff1a6216), fontWeight: FontWeight.normal),
               ),
               leading: IconButton(
@@ -402,44 +437,38 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                         SizedBox(
                           height: 5,
                         ),
-                        image != null
-                            ? Container(
+                        InkWell(
+                          onTap: () {
+                            bottomDialog(context);
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
                                 height: h / 7,
                                 width: w / 3.5,
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5), color: const Color.fromARGB(255, 110, 245, 115).withOpacity(0.6)),
-                                child: Image.file(
-                                  //to show image, you type like this.
-                                  File(image!.path),
-                                  fit: BoxFit.cover,
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 300,
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                              )
-                            : InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                  });
-                                  bottomDialog(context);
-                                },
-                                child: Container(
-                                  height: h / 7,
-                                  width: w / 3.5,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5), color: const Color.fromARGB(255, 110, 245, 115).withOpacity(0.6)),
-                                  child: Center(
-                                    child: Center(
-                                        child: Opacity(
-                                      opacity: 0.8,
-                                      child: Icon(
-                                        Icons.add_a_photo,
-                                        size: 25.sp,
-                                      ),
-                                    )),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: widget.img == ""
+                                        ? Image.asset("assets/q.PNG")
+                                        : Image.file(
+                                            //to show image, you type like this.
+                                            File(proImg),
+                                            fit: BoxFit.cover,
+                                            width: MediaQuery.of(context).size.width,
+                                            height: 300,
+                                          ),
                                   ),
                                 ),
                               ),
+                              Positioned(bottom: 0, right: 0, child: Icon(Icons.add_a_photo))
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: 5,
                         ),
@@ -541,7 +570,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Column(
@@ -553,14 +582,9 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                                   ),
                                   SizedBox(
                                     height: h / 15,
-                                    width: w / 1.8,
+                                    width: w / 1.7,
                                     child: TextField(
                                       keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        // Fit the validating format.
-                                        //fazer o formater para dinheiro
-                                        CurrencyInputFormatter()
-                                      ],
                                       controller: salePrice,
                                       decoration: InputDecoration(
                                         prefixIcon: Padding(
@@ -587,7 +611,9 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                                   ),
                                 ],
                               ),
-                              Spacer(),
+                              SizedBox(
+                                width: 8,
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -597,7 +623,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                                   ),
                                   SizedBox(
                                     height: h / 15,
-                                    width: w / 3.2,
+                                    width: w / 3,
                                     child: TextField(
                                       readOnly: true,
                                       controller: unit,
@@ -745,109 +771,39 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-// option Area ------------------------------------------------------------------------------------------------------------------------------------------------------
-                SizedBox(
-                  height: h - 200,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: h / 10,
-                          width: w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xff9ab0ea)),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Icon(Icons.add_box),
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "New Option",
-                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "Add an extra option for this product",
-                                    style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: h / 2.5,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          width: w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xffe1fadd)),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                child: Icon(Icons.quiz_sharp),
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Using Options",
-                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "Need to change more for that extra \ncheese? Create options to add additional\n surcharge",
-                                    style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
+
+                Text('nedendenaaaaaaaaaaaafnnfnfnngnbngbngnbgbngbngnbnded'),
               ],
             ),
-            bottomSheet: AbsorbPointer(
-              absorbing: button,
-              child: Container(
-                padding: EdgeInsets.all(12),
-                child: MainButton(
-                  color: button ? Color.fromARGB(255, 181, 175, 175) : Color.fromARGB(255, 104, 234, 108),
-                  buttonHeight: h / 14,
-                  onTap: _tabController!.index == 2
-                      ? () async {
-                          var res = await sqlDb.insertData(
-                              'INSERT INTO add_product ("product_name","pro_cat","img","sku","barcode","sales_prise","unit","product_cost") VALUES("${productName.text}","${catName.text}","$imgName","${sku.text}","${barcode.text}","${salePrice.text}","${unit.text}","${productCost.text}")');
-                          print(res);
-                          List data = await sqlDb.readData("Select * from add_product ");
-                          print(data);
+            bottomSheet: Container(
+              padding: EdgeInsets.all(12),
+              child: MainButton(
+                color: Color.fromARGB(255, 104, 234, 108),
+                buttonHeight: h / 14,
+                onTap: _tabController!.index == 2
+                    ? () async {
+                        var res = await sqlDb.updateData(
+                            'UPDATE add_product SET product_name = "${productName.text}",pro_cat ="${catName.text}",img="$imgName",sku ="${sku.text}",barcode ="${barcode.text}", sales_prise ="${salePrice.text}",unit="${unit.text}",product_cost="${productCost.text}"  Where id = "${widget.proId}"');
+                        print(res);
+                        List data = await sqlDb.readData("Select * from add_product ");
+                        print(data);
 
-                          load(context);
-                        }
-                      : () {
+                        load(context);
+                      }
+                    : () {
+                        setState(() {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                        });
+                        _tabController!.index += 1;
+
+                        if (_tabController!.index == 2) {
                           setState(() {
-                            FocusManager.instance.primaryFocus?.unfocus();
+                            tabEnd = true;
                           });
-                          _tabController!.index += 1;
-
-                          if (_tabController!.index == 2) {
-                            setState(() {
-                              tabEnd = true;
-                            });
-                          }
-                        },
-                  text: _tabController!.index == 2 ? "Save" : "Next",
-                  width: w,
-                ),
+                        }
+                      },
+                text: _tabController!.index == 2 ? "Save" : "Next",
+                width: w,
               ),
             )),
       ),
@@ -881,14 +837,13 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
 
     setState(() {
       image = img;
+      proImg = img!.path;
+      widget.img = "a";
     });
     saveImagePermanently(img!.path);
   }
 
   Future<File?> saveImagePermanently(String? imagePath) async {
-    // final directory = await getApplicationSupportDirectory();
-    // print(directory.path);
-    print("dndhbchdbhcbdhbc");
     final directory = "/storage/emulated/0/Android/data/com.example.nova_pos/files/img";
 // /storage/emulated/0/Android/data/com.example.nova_pos/files/imgf/img/IMG_20230821_101421.jpg
 
