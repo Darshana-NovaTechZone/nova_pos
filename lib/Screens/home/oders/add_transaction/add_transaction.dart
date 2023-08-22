@@ -30,8 +30,16 @@ class _AddTransactionState extends State<AddTransaction> {
   String myValue = "";
   String price = "0";
   int y = 0;
+  List tempCart = [];
   GlobalKey<ExpandableBottomSheetState> key = new GlobalKey();
   int _contentAmount = 0;
+
+  String pName = "";
+  String cName = "";
+  String pcs = "";
+  String Qnt = "";
+  String cartP = "";
+  String id = "";
   ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
   loadData() async {
     allProduct = await sqlDb.readData("Select * from add_product ");
@@ -218,11 +226,50 @@ class _AddTransactionState extends State<AddTransaction> {
 
                                 int x = int.parse(pPrice);
 
+                                // pName = product[index]['product_name'];
+                                // cName = product[index]['pro_cat'];
+                                // pcs = product[index]['sales_prise'];
+                                // Qnt += "1";
+                                // cartP = pPrice;
+                                List<ListItem> cart = [
+                                  ListItem(
+                                    product[index]['id'],
+                                    product[index]['product_name'],
+                                    product[index]['pro_cat'],
+                                    product[index]['sales_prise'],
+                                    1,
+                                    x,
+                                  ),
+                                  // {
+                                  //   id = product[index]['id'].toString(),
+                                  //   pName = product[index]['product_name'],
+                                  //   cName = product[index]['pro_cat'],
+                                  //   pcs = product[index]['sales_prise'],
+                                  //   Qnt += "1",
+                                  //   cartP = pPrice,
+                                  // }
+                                ];
+
                                 return InkWell(
                                   onTap: () {
-                                    setState(() {
-                                      y = x + y;
+                                    // Update items with the same ID
+                                    for (var newItem in cart) {
+                                      var existingItem = tempCart.firstWhere((item) => item.id == newItem.id, orElse: () {
+                                        tempCart.addAll(cart);
+                                        return null;
+                                      });
+                                      if (existingItem != null) {
+                                        existingItem.Qnt += 1;
+                                        existingItem.cartP = x + existingItem.cartP;
 
+                                        print(existingItem.pcs);
+                                      }
+                                    }
+                                    setState(() {
+                                      cart;
+
+                                      y = x + y;
+                                      print(tempCart);
                                       price = y.toString();
                                     });
                                   },
@@ -338,6 +385,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     ),
                     Expanded(
                       child: ListView.builder(
+                        itemCount: tempCart.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -350,13 +398,13 @@ class _AddTransactionState extends State<AddTransaction> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text("CART",
+                                      Text(tempCart[index].pName,
                                           style: TextStyle(
                                             fontSize: 12.sp,
                                             color: Color(0xff7c7c7c),
                                             fontWeight: FontWeight.bold,
                                           )),
-                                      Text("50.00",
+                                      Text(tempCart[index].cartP.toString(),
                                           style: TextStyle(
                                             fontSize: 12.sp,
                                             color: Color(0xff7c7c7c),
@@ -373,7 +421,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                             padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                                             decoration:
                                                 BoxDecoration(borderRadius: BorderRadius.circular(2), color: Color.fromARGB(255, 149, 153, 149)),
-                                            child: Text("50.00",
+                                            child: Text(tempCart[index].cName,
                                                 style: TextStyle(
                                                   fontSize: 8.sp,
                                                   color: white,
@@ -383,7 +431,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                           SizedBox(
                                             width: 8,
                                           ),
-                                          Text("50.00/psc",
+                                          Text(tempCart[index].pcs,
                                               style: TextStyle(
                                                 fontSize: 8.sp,
                                                 color: Color(0xff7c7c7c),
@@ -391,7 +439,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                               )),
                                         ],
                                       ),
-                                      Text("1 psc",
+                                      Text(tempCart[index].Qnt.toString(),
                                           style: TextStyle(
                                             fontSize: 8.sp,
                                             color: Color(0xff7c7c7c),
@@ -460,6 +508,24 @@ class _AddTransactionState extends State<AddTransaction> {
           ),
         ));
   }
+}
 
-  tap() {}
+class ListItem {
+  int id;
+  String pName;
+  String cName;
+  String pcs;
+  int Qnt;
+  int cartP;
+
+  // other attributes
+
+  ListItem(
+    this.id,
+    this.pName,
+    this.cName,
+    this.pcs,
+    this.Qnt,
+    this.cartP,
+  );
 }
