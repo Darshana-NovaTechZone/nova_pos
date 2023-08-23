@@ -228,7 +228,6 @@ class _AddTransactionState extends State<AddTransaction> {
                                 String rep = "";
                                 String pPrice = newStr.replaceAll(sub, rep);
 
-                                x = int.parse(pPrice);
                                 int n = int.parse(pPrice);
                                 // pName = product[index]['product_name'];
                                 // cName = product[index]['pro_cat'];
@@ -266,6 +265,15 @@ class _AddTransactionState extends State<AddTransaction> {
 
                                 return InkWell(
                                   onTap: () {
+                                    String str = product[index]['sales_prise'];
+                                    String substr = ",";
+                                    String replacement = "";
+                                    String newStr = str.replaceAll(substr, replacement);
+                                    String sub = ".";
+                                    String rep = "";
+                                    String pPrice = newStr.replaceAll(sub, rep);
+
+                                    x = int.parse(pPrice);
                                     y += x;
                                     x = y;
 
@@ -531,7 +539,7 @@ class _AddTransactionState extends State<AddTransaction> {
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
                               duration: Duration(milliseconds: 400),
-                              child: Pay(summery: tempCart, pName: pName),
+                              child: Pay(summery: tempCart, total: x),
                               inheritTheme: true,
                               ctx: context),
                         );

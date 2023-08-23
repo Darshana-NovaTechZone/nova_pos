@@ -4,6 +4,7 @@ import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:fdottedline_nullsafety/fdottedline__nullsafety.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nova_pos/Screens/home/payment/receipt.dart';
 import 'package:nova_pos/color/colors.dart';
 import 'package:nova_pos/widgets/custom_textfield.dart';
 import 'package:page_transition/page_transition.dart';
@@ -20,9 +21,9 @@ import '../product/add_unit/add_unit.dart';
 import '../product/dropdown/select_category.dart';
 
 class Pay extends StatefulWidget {
-  const Pay({super.key, required this.summery, required this.pName});
+  const Pay({super.key, required this.summery, required this.total});
   final List<ListItem> summery;
-  final String pName;
+  final int total;
 
   @override
   State<Pay> createState() => _PayState();
@@ -46,6 +47,10 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
   int _currentTabIndex = 0;
   bool tabEnd = false;
   String imgName = "";
+  int duePrice = 0;
+  int pay = 0;
+  bool change = false;
+  int index = 0;
 
   final ImagePicker picker = ImagePicker();
 
@@ -77,6 +82,11 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
       length: 3,
       initialIndex: 0,
     );
+
+    setState(() {
+      duePrice = widget.total;
+      pay = widget.total;
+    });
     _tabController!.addListener(() {
       if (_tabController!.index == 0) {
         setState(() {
@@ -92,6 +102,7 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
       }
       if (_tabController!.index == 2) {
         setState(() {
+          index = 2;
           print('ssssssssssssssss');
           tabEnd = true;
         });
@@ -236,7 +247,7 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          height: h / 3,
+                          padding: const EdgeInsets.all(8.0),
                           width: w,
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xfff4e1d3)),
                           child: Column(
@@ -298,21 +309,157 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                                 },
                               ),
                               FDottedLine(
-                                color: Colors.brown,
+                                color: Color.fromARGB(255, 207, 175, 163),
                                 width: w,
                                 strokeWidth: 2.0,
                                 dottedLength: 10.0,
                                 space: 2.0,
-                              )
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Subtotal",
+                                      style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
+                                    ),
+                                    Text(
+                                      "\$${widget.total.toString()}",
+                                      style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Grandtotal",
+                                      style: TextStyle(color: Colors.brown, fontSize: 15.sp, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      "\$${widget.total.toString()}",
+                                      style: TextStyle(color: Colors.brown, fontSize: 15.sp, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
+                        ),
+                        SizedBox(
+                          height: h / 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () {},
+                                  child: Container(
+                                    height: w / 5.2,
+                                    width: w / 5.2,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.black26)),
+                                    child: Icon(
+                                      Icons.delivery_dining,
+                                      size: 25.sp,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "Delivery",
+                                  style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 10.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () {},
+                                  child: Container(
+                                    height: w / 5.2,
+                                    width: w / 5.2,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.black26)),
+                                    child: Icon(
+                                      Icons.local_offer,
+                                      size: 25.sp,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "Discount",
+                                  style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 10.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () {},
+                                  child: Container(
+                                    height: w / 5.2,
+                                    width: w / 5.2,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.black26)),
+                                    child: Icon(
+                                      Icons.volunteer_activism,
+                                      size: 25.sp,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "Service",
+                                  style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 10.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () {},
+                                  child: Container(
+                                    height: w / 5.2,
+                                    width: w / 5.2,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.black26)),
+                                    child: Icon(
+                                      Icons.account_balance,
+                                      size: 25.sp,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "Tex",
+                                  style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 10.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ],
                         )
                       ],
                     ),
                   ),
                 ),
 
-                //  price screen area -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                //  Details screen area -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
                 SizedBox(
                   height: h,
@@ -326,114 +473,28 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Sales Price",
-                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
-                                  ),
-                                  SizedBox(
-                                    height: h / 15,
-                                    width: w / 1.8,
-                                    child: TextField(
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        // Fit the validating format.
-                                        //fazer o formater para dinheiro
-                                        CurrencyInputFormatter()
-                                      ],
-                                      controller: salePrice,
-                                      decoration: InputDecoration(
-                                        prefixIcon: Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Text(
-                                            '\$',
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                        contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
-                                        filled: true,
-                                        hintStyle: TextStyle(color: Colors.grey[800]),
-                                        fillColor: Colors.white70,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                "Custom date and time",
+                                style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
                               ),
-                              Spacer(),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Unit",
-                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
-                                  ),
-                                  SizedBox(
-                                    height: h / 15,
-                                    width: w / 3.2,
-                                    child: TextField(
-                                      readOnly: true,
-                                      controller: unit,
-                                      decoration: InputDecoration(
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            Icons.arrow_forward_ios_rounded,
-                                            size: 18,
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  type: PageTransitionType.rightToLeft,
-                                                  duration: Duration(milliseconds: 400),
-                                                  child: AddUnit(selectUnit: selectedUnit),
-                                                  inheritTheme: true,
-                                                  ctx: context),
-                                            );
-                                          },
-                                        ),
-                                        contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
-                                        filled: true,
-                                        hintStyle: TextStyle(color: Colors.grey[800]),
-                                        fillColor: Colors.white70,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              Switch(
+                                value: setpro,
+                                onChanged: (value) {
+                                  setState(() {
+                                    setpro = value;
+                                  });
+                                },
+                                activeColor: Color.fromARGB(255, 233, 149, 233),
+                                inactiveThumbColor: white,
+                              )
                             ],
                           ),
                           SizedBox(
                             height: 5,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Price per nnnn",
-                              style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
-                            ),
-                          ),
                           Text(
-                            "Product Cost (Optional)",
+                            "Notes (Optional)",
                             style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
                           ),
                           SizedBox(
@@ -444,14 +505,60 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                             width: w,
                             child: TextField(
                               keyboardType: TextInputType.number,
-                              controller: productCost,
                               decoration: InputDecoration(
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text(
-                                    '\$',
-                                    textAlign: TextAlign.start,
+                                prefixIcon: Icon(Icons.note),
+                                contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
+                                focusedBorder:
+                                    OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
+                                filled: true,
+                                hintStyle: TextStyle(color: Colors.grey[800]),
+                                fillColor: Colors.white70,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: true,
+                                onChanged: (value) {},
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Include notes on the receipt",
+                                  style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "Customer",
+                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          SizedBox(
+                            height: h / 15,
+                            width: w,
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.person),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    size: 18,
                                   ),
+                                  onPressed: () {},
                                 ),
                                 contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
                                 border: OutlineInputBorder(
@@ -470,21 +577,11 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                           SizedBox(
                             height: 5,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Price per nnnn",
-                              style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Wholesale Price",
+                                "Custom Invoice Number",
                                 style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
                               ),
                               Switch(
@@ -502,24 +599,9 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                           SizedBox(
                             height: 5,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Enable stock calculation",
-                                style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
-                              ),
-                              Switch(
-                                value: variant,
-                                onChanged: (value) {
-                                  setState(() {
-                                    variant = value;
-                                  });
-                                },
-                                activeColor: Color.fromARGB(255, 233, 149, 233),
-                                inactiveThumbColor: white,
-                              )
-                            ],
+                          Text(
+                            "Queue Number",
+                            style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
                           ),
                           SizedBox(
                             height: 5,
@@ -529,35 +611,75 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                     ),
                   ),
                 ),
-// option Area ------------------------------------------------------------------------------------------------------------------------------------------------------
+// Payent Area ------------------------------------------------------------------------------------------------------------------------------------------------------
                 SizedBox(
                   height: h - 200,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          height: h / 10,
+                          padding: const EdgeInsets.all(8.0),
                           width: w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xff9ab0ea)),
-                          child: Row(
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xfff4e1d3)),
+                          child: Column(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Icon(Icons.add_box),
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "New Option",
-                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                    " Grand Total",
+                                    style: TextStyle(color: Colors.brown, fontWeight: FontWeight.normal, fontSize: 13.sp),
                                   ),
+                                  Container(
+                                    alignment: Alignment.centerRight,
+                                    width: w / 5,
+                                    child: FittedBox(
+                                      child: Text(
+                                        "\$ ${widget.total}",
+                                        style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 13.sp),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
                                   Text(
-                                    "Add an extra option for this product",
-                                    style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
+                                    " Payment",
+                                    style: TextStyle(color: Colors.brown, fontWeight: FontWeight.normal, fontSize: 13.sp),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.centerRight,
+                                    width: w / 5,
+                                    child: FittedBox(
+                                      child: Text(
+                                        "\$ ${pay.toString()}",
+                                        style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 13.sp),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    change ? " Change" : " Due",
+                                    style: TextStyle(color: Colors.brown, fontWeight: FontWeight.normal, fontSize: 13.sp),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.centerRight,
+                                    width: w / 5,
+                                    child: FittedBox(
+                                      child: Text(
+                                        "\$ ${duePrice.toString()}",
+                                        style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 13.sp),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -565,73 +687,195 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         SizedBox(
-                          height: h / 2.5,
+                          height: 10,
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        Text(
+                          "Payment Label",
+                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SizedBox(
+                          height: h / 15,
                           width: w,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xffe1fadd)),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                child: Icon(Icons.quiz_sharp),
+                          child: TextField(
+                            readOnly: true,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: "Cash",
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down,
+                                  size: 18,
+                                ),
+                                onPressed: () {},
                               ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Using Options",
-                                    style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "Need to change more for that extra \ncheese? Create options to add additional\n surcharge",
-                                    style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.normal),
-                                  ),
-                                ],
+                              contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20.0),
                               ),
-                            ],
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
+                              focusedBorder:
+                                  OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
+                              filled: true,
+                              hintStyle: TextStyle(color: Colors.grey[800]),
+                              fillColor: Colors.white70,
+                            ),
                           ),
-                        )
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Total Paid",
+                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SizedBox(
+                          height: h / 15,
+                          width: w,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.attach_money,
+                                size: 18,
+                              ),
+                              contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
+                              focusedBorder:
+                                  OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
+                              filled: true,
+                              hintStyle: TextStyle(color: Colors.grey[800]),
+                              fillColor: Colors.white70,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  duePrice = widget.total;
+                                  pay = 0;
+                                  change = false;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color.fromARGB(255, 102, 214, 85)),
+                                child: Text(
+                                  "0%",
+                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  var x = 25 / 100 * widget.total;
+                                  var y = 75 / 100 * widget.total;
+                                  duePrice = y.toInt();
+                                  pay = x.toInt();
+                                  change = false;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color.fromARGB(255, 102, 214, 85)),
+                                child: Text(
+                                  "25%",
+                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  var x = 50 / 100 * widget.total;
+                                  var y = 50 / 100 * widget.total;
+                                  duePrice = x.toInt();
+                                  pay = y.toInt();
+                                  change = false;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color.fromARGB(255, 102, 214, 85)),
+                                child: Text(
+                                  "50%",
+                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  duePrice = 0;
+                                  pay = widget.total;
+                                  change = true;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 8),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color.fromARGB(255, 102, 214, 85)),
+                                child: Text(
+                                  "100%",
+                                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                 )
               ],
             ),
-            bottomSheet: AbsorbPointer(
-              absorbing: button,
-              child: Container(
-                padding: EdgeInsets.all(12),
-                child: MainButton(
-                  color: button ? Color.fromARGB(255, 181, 175, 175) : Color.fromARGB(255, 104, 234, 108),
-                  buttonHeight: h / 14,
-                  onTap: _tabController!.index == 2
-                      ? () async {
-                          var res = await sqlDb.insertData(
-                              'INSERT INTO add_product ("product_name","pro_cat","img","sku","barcode","sales_prise","unit","product_cost") VALUES("${productName.text}","${catName.text}","$imgName","${sku.text}","${barcode.text}","${salePrice.text}","${unit.text}","${productCost.text}")');
-                          print(res);
-                          List data = await sqlDb.readData("Select * from add_product ");
-                          print(data);
+            bottomSheet: Container(
+              padding: EdgeInsets.all(12),
+              child: MainButton(
+                color: Color.fromARGB(255, 104, 234, 108),
+                buttonHeight: h / 14,
+                onTap: _tabController!.index == 2
+                    ? () async {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              duration: Duration(milliseconds: 400),
+                              child: Receipt(),
+                              inheritTheme: true,
+                              ctx: context),
+                        );
+                      }
+                    : () {
+                        setState(() {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                        });
+                        _tabController!.index += 1;
 
-                          load(context);
-                        }
-                      : () {
+                        if (_tabController!.index == 2) {
                           setState(() {
-                            FocusManager.instance.primaryFocus?.unfocus();
+                            tabEnd = true;
                           });
-                          _tabController!.index += 1;
-
-                          if (_tabController!.index == 2) {
-                            setState(() {
-                              tabEnd = true;
-                            });
-                          }
-                        },
-                  text: _tabController!.index == 2 ? "Save" : "Next",
-                  width: w,
-                ),
+                        }
+                      },
+                text: "PAY FULL",
+                width: w,
               ),
             )),
       ),
