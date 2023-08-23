@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:extended_masked_text/extended_masked_text.dart';
+import 'package:fdottedline_nullsafety/fdottedline__nullsafety.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nova_pos/color/colors.dart';
@@ -14,27 +15,27 @@ import 'package:path/path.dart';
 import '../../../class/curruncy.dart';
 import '../../../db/sqldb.dart';
 import '../../../widgets/mainButton.dart';
-import 'add_unit/add_unit.dart';
-import 'dropdown/select_category.dart';
+import '../oders/add_transaction/add_transaction.dart';
+import '../product/add_unit/add_unit.dart';
+import '../product/dropdown/select_category.dart';
 
-class AddProduct extends StatefulWidget {
-  const AddProduct({super.key, required this.loadData});
-  final Function loadData;
+class Pay extends StatefulWidget {
+  const Pay({super.key, required this.summery, required this.pName});
+  final List<ListItem> summery;
+  final String pName;
 
   @override
-  State<AddProduct> createState() => _AddProductState();
+  State<Pay> createState() => _PayState();
 }
 
-class _AddProductState extends State<AddProduct> with SingleTickerProviderStateMixin {
+class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
   TextEditingController productName = TextEditingController();
   TextEditingController catName = TextEditingController(text: "Unclassified");
   TextEditingController sku = TextEditingController();
   TextEditingController barcode = TextEditingController();
-  TextEditingController salePrice = TextEditingController();
-  TextEditingController productCost = TextEditingController();
-  // final salePrice = MoneyMaskedTextController(initialValue: 0);
+  final salePrice = MoneyMaskedTextController(initialValue: 0);
   TextEditingController unit = TextEditingController(text: "pcs");
-  // final productCost = MoneyMaskedTextController(initialValue: 0);
+  final productCost = MoneyMaskedTextController(initialValue: 0);
   TabController? _tabController;
   bool setpro = false;
   bool variant = false;
@@ -114,15 +115,11 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
             backgroundColor: Color(0xfff8f8f8),
             appBar: AppBar(
               backgroundColor: Color(0xff93dc8a),
+              actions: [IconButton(onPressed: () {}, icon: Icon(Icons.save))],
               title: Text(
-                "Add Product",
+                "Summary",
                 style: TextStyle(fontSize: 17.sp, color: Color(0xff1a6216), fontWeight: FontWeight.normal),
               ),
-              leading: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(Icons.close)),
               bottom: TabBar(
                   controller: _tabController,
                   unselectedLabelColor: Color(0xff1a6216),
@@ -147,14 +144,14 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.info,
+                                  Icons.pending_actions_rounded,
                                   size: 17,
                                   color: Color(0xff1a6216),
                                 ),
                                 SizedBox(
                                   width: 5,
                                 ),
-                                Text("INFO",
+                                Text("PRODUCT",
                                     style: TextStyle(
                                       color: Color(0xff1a6216),
                                     )),
@@ -178,14 +175,14 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.monetization_on,
+                                  Icons.description_outlined,
                                   size: 17,
                                   color: Color(0xff1a6216),
                                 ),
                                 SizedBox(
                                   width: 5,
                                 ),
-                                Text("PRICE", style: TextStyle(color: Color(0xff1a6216))),
+                                Text("DETAILS", style: TextStyle(color: Color(0xff1a6216))),
                               ],
                             ),
                           ),
@@ -206,7 +203,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.extension,
+                                  Icons.payment,
                                   size: 17,
                                   color: Color(0xff1a6216),
                                 ),
@@ -214,7 +211,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                                   width: 5,
                                 ),
                                 Text(
-                                  "OPTIONS",
+                                  "PAYMENT",
                                   style: TextStyle(
                                     color: Color(0xff1a6216),
                                   ),
@@ -238,292 +235,77 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Product Name",
-                          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        SizedBox(
-                          height: h / 15,
-                          child: TextField(
-                            controller: productName,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
-                              focusedBorder:
-                                  OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
-                              filled: true,
-                              hintStyle: TextStyle(color: Colors.grey[800]),
-                              fillColor: Colors.white70,
-                            ),
-                            onChanged: (value) {
-                              if (value.isNotEmpty) {
-                                setState(() {
-                                  button = false;
-                                });
-                              } else {
-                                setState(() {
-                                  button = true;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Category",
-                          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        SizedBox(
-                          height: h / 15,
-                          child: TextField(
-                            controller: catName,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
-                              prefixIcon: Icon(Icons.category),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  size: 18,
-                                ),
-                                onPressed: () {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.rightToLeft,
-                                        duration: Duration(milliseconds: 400),
-                                        child: SelectCategory(selectedCat: selectedCat),
-                                        inheritTheme: true,
-                                        ctx: context),
+                        Container(
+                          height: h / 3,
+                          width: w,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color(0xfff4e1d3)),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: widget.summery.length,
+                                itemBuilder: (context, index) {
+                                  print(widget.summery[index]);
+                                  return Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              widget.summery[index].pName,
+                                              style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 15.sp),
+                                            ),
+                                            Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  "${widget.summery[index].Qnt.toString()} pcs",
+                                                  style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 13.sp),
+                                                ),
+                                                Container(
+                                                  alignment: Alignment.centerRight,
+                                                  width: w / 5,
+                                                  child: FittedBox(
+                                                    child: Text(
+                                                      "\$ ${widget.summery[index].cartP.toString()}",
+                                                      style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 13.sp),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "${widget.summery[index].cName.toString()} ",
+                                              style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
+                                            ),
+                                            Text(
+                                              "• \$ ${widget.summery[index].pcs}",
+                                              style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 },
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
-                              focusedBorder:
-                                  OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
-                              filled: true,
-                              hintStyle: TextStyle(color: Colors.grey[800]),
-                              fillColor: Colors.white70,
-                            ),
-                            onChanged: (value) {
-                              if (value.isNotEmpty) {
-                                setState(() {
-                                  button = false;
-                                });
-                              } else {
-                                setState(() {
-                                  button = true;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Set as Featured product",
-                              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
-                            ),
-                            Switch(
-                              value: setpro,
-                              onChanged: (value) {
-                                setState(() {
-                                  setpro = value;
-                                });
-                              },
-                              activeColor: Color.fromARGB(255, 233, 149, 233),
-                              inactiveThumbColor: white,
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Enable variant",
-                              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.normal),
-                            ),
-                            Switch(
-                              value: variant,
-                              onChanged: (value) {
-                                setState(() {
-                                  variant = value;
-                                });
-                              },
-                              activeColor: Color.fromARGB(255, 233, 149, 233),
-                              inactiveThumbColor: white,
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Icon(Icons.sticky_note_2_outlined),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "DETAILS (OPTIONAL)",
-                              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Image",
-                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        image != null
-                            ? Container(
-                                height: h / 7,
-                                width: w / 3.5,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5), color: const Color.fromARGB(255, 110, 245, 115).withOpacity(0.6)),
-                                child: Image.file(
-                                  //to show image, you type like this.
-                                  File(image!.path),
-                                  fit: BoxFit.cover,
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 300,
-                                ),
+                              FDottedLine(
+                                color: Colors.brown,
+                                width: w,
+                                strokeWidth: 2.0,
+                                dottedLength: 10.0,
+                                space: 2.0,
                               )
-                            : InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                  });
-                                  bottomDialog(context);
-                                },
-                                child: Container(
-                                  height: h / 7,
-                                  width: w / 3.5,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5), color: const Color.fromARGB(255, 110, 245, 115).withOpacity(0.6)),
-                                  child: Center(
-                                    child: Center(
-                                        child: Opacity(
-                                      opacity: 0.8,
-                                      child: Icon(
-                                        Icons.add_a_photo,
-                                        size: 25.sp,
-                                      ),
-                                    )),
-                                  ),
-                                ),
-                              ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "SKU",
-                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        CustomTextField(edit: sku, type: TextInputType.name),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Barcode",
-                          style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.normal),
-                        ),
-                        SizedBox(
-                          height: h / 15,
-                          child: TextField(
-                            controller: barcode,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
-                              suffixIcon: InkWell(
-                                borderRadius: BorderRadius.circular(20.0),
-                                onTap: () async {
-                                  var res = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const SimpleBarcodeScannerPage(),
-                                      ));
-                                  setState(() {
-                                    if (res is String) {
-                                      if (res[0] == "-") {
-                                        result = "";
-                                      } else {
-                                        result = res;
-                                      }
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.qr_code_scanner_outlined,
-                                        color: Color.fromARGB(255, 104, 234, 108),
-                                      ),
-                                      SizedBox(
-                                        width: 12,
-                                      ),
-                                      Text(
-                                        "Scan",
-                                        style: TextStyle(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.normal,
-                                          color: Color.fromARGB(255, 104, 234, 108),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Color.fromARGB(255, 120, 125, 120))),
-                              focusedBorder:
-                                  OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.green)),
-                              filled: true,
-                              hintStyle: TextStyle(color: Colors.grey[800]),
-                              fillColor: Colors.white70,
-                            ),
+                            ],
                           ),
-                        ),
-                        SizedBox(
-                          height: 150,
                         )
                       ],
                     ),
@@ -561,6 +343,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
                                       inputFormatters: [
                                         // Fit the validating format.
                                         //fazer o formater para dinheiro
+                                        CurrencyInputFormatter()
                                       ],
                                       controller: salePrice,
                                       decoration: InputDecoration(
@@ -856,8 +639,6 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
   }
 
   load(BuildContext context) {
-    widget.loadData();
-
     Navigator.pop(context);
   }
 

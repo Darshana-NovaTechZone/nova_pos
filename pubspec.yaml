@@ -56,6 +56,7 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   combined_barcode_scanner: ^0.0.1-dev.1
   expandable_bottom_sheet: ^1.1.1+1
+  fdottedline_nullsafety: ^2.0.1
 
  
 

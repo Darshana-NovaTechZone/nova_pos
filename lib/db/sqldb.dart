@@ -15,8 +15,8 @@ class SqlDb {
 
   intialDb() async {
     String databasepath = await getDatabasesPath();
-    String path = join(databasepath, 'qsasf.db');
-    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 21, onUpgrade: _onUpgrade);
+    String path = join(databasepath, 'aaf.db');
+    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 3, onUpgrade: _onUpgrade);
     return mydb;
   }
 
@@ -129,10 +129,11 @@ class SqlDb {
     await db.execute('''
   CREATE TABLE "cart" (
     "id" INTEGER  NOT NULL PRIMARY KEY  ,
-     "p_name" TEXT NOT NULL,
-      "c_name" TEXT NOT NULL,
-     "quantity" TEXT NOT NULL
-
+     "temp_cart" TEXT NOT NULL,
+       "date_time" TEXT NOT NULL,
+       "item" TEXT NOT NULL,
+       "price" TEXT NOT NULL
+   
    
      
       

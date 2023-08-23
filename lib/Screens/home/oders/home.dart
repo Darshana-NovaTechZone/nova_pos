@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:nova_pos/Screens/home/oders/add_transaction/add_transaction.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+
+import '../../../db/sqldb.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -11,6 +15,37 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  SqlDb sqlDb = SqlDb();
+  List cartList = [];
+  List<Map<String, dynamic>> addcartList = [];
+  List list = [
+    {
+      "id": "dddddd",
+      "pName": "dddddd",
+      "cName": "dddddd",
+      "pcs": "dddddd",
+      "qnt": "dddddd",
+      "cartP": "dddddd",
+      "date_time": "dddddd",
+    }
+  ];
+
+  cartData() async {
+    List data = await sqlDb.readData("Select * from cart ");
+
+    setState(() {
+      cartList = data;
+      print(cartList);
+    });
+  }
+
+  @override
+  void initState() {
+    cartData();
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
@@ -86,7 +121,7 @@ class _HomeState extends State<Home> {
                 PageTransition(
                     type: PageTransitionType.rightToLeft,
                     duration: Duration(milliseconds: 400),
-                    child: AddTransaction(),
+                    child: AddTransaction(loadCart: cartData),
                     inheritTheme: true,
                     ctx: context),
               );
@@ -143,25 +178,79 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.lock,
-                          color: Color(0xff676b74),
-                          size: 25.sp,
-                        )),
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "You have no active cart",
-                      style: TextStyle(fontSize: 13.sp, color: Color(0xff626a7c)),
-                    ),
-                  ),
+                  cartList.isEmpty
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.lock,
+                                    color: Color(0xff676b74),
+                                    size: 25.sp,
+                                  )),
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "You have no active cart",
+                                style: TextStyle(fontSize: 13.sp, color: Color(0xff626a7c)),
+                              ),
+                            )
+                          ],
+                        )
+                      : SizedBox(
+                          height: h / 6,
+                          child: ListView.builder(
+                            itemCount: cartList.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              print(cartList[index]);
+
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  height: h / 6,
+                                  width: w / 4,
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: Color.fromARGB(255, 246, 251, 255)),
+                                  child: Column(
+                                    children: [
+                                      FittedBox(
+                                        child: Text(
+                                          cartList[index]['date_time'],
+                                          style: TextStyle(fontSize: 9.sp, color: Color(0xff626a7c)),
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          FittedBox(
+                                            child: Text(
+                                              "${cartList[index]['item']} item(s)",
+                                              style: TextStyle(fontSize: 9.sp, color: Color(0xff626a7c)),
+                                            ),
+                                          ),
+                                          FittedBox(
+                                            child: Text(
+                                              "\$${cartList[index]['price']}",
+                                              style: TextStyle(fontSize: 9.sp, color: Color(0xff626a7c)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Spacer(),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
                 ],
               ),
             ],

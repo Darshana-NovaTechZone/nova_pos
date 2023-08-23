@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:intl/intl.dart';
 import 'package:nova_pos/color/colors.dart';
 
 import 'package:page_transition/page_transition.dart';
@@ -13,10 +14,12 @@ import 'package:sizer/sizer.dart';
 import '../../../../db/sqldb.dart';
 import '../../../../widgets/mainButton.dart';
 import '../../../../widgets/main_button2.dart';
+import '../../payment/pay.dart';
 import '../../product/add_category.dart';
 
 class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key});
+  const AddTransaction({super.key, required this.loadCart});
+  final Function loadCart;
 
   @override
   State<AddTransaction> createState() => _AddTransactionState();
@@ -30,15 +33,15 @@ class _AddTransactionState extends State<AddTransaction> {
   String myValue = "";
   String price = "0";
   int y = 0;
-  List tempCart = [];
+  List<ListItem> tempCart = [];
   GlobalKey<ExpandableBottomSheetState> key = new GlobalKey();
   int _contentAmount = 0;
-
+  int x = 0;
   String pName = "";
   String cName = "";
   String pcs = "";
-  String Qnt = "";
-  String cartP = "";
+  int Qnt = 0;
+  int cartP = 0;
   String id = "";
   ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
   loadData() async {
@@ -48,6 +51,11 @@ class _AddTransactionState extends State<AddTransaction> {
     setState(() {
       product = allProduct;
     });
+  }
+
+  loadCart() {
+    widget.loadCart();
+    Navigator.pop(context);
   }
 
   // This function is called whenever the text field changes
@@ -215,17 +223,13 @@ class _AddTransactionState extends State<AddTransaction> {
                                 String str = product[index]['sales_prise'];
                                 String substr = ",";
                                 String replacement = "";
-
                                 String newStr = str.replaceAll(substr, replacement);
-
                                 String sub = ".";
                                 String rep = "";
-
                                 String pPrice = newStr.replaceAll(sub, rep);
-                                print(newStr);
 
-                                int x = int.parse(pPrice);
-
+                                x = int.parse(pPrice);
+                                int n = int.parse(pPrice);
                                 // pName = product[index]['product_name'];
                                 // cName = product[index]['pro_cat'];
                                 // pcs = product[index]['sales_prise'];
@@ -238,7 +242,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                     product[index]['pro_cat'],
                                     product[index]['sales_prise'],
                                     1,
-                                    x,
+                                    n,
                                   ),
                                   // {
                                   //   id = product[index]['id'].toString(),
@@ -249,28 +253,38 @@ class _AddTransactionState extends State<AddTransaction> {
                                   //   cartP = pPrice,
                                   // }
                                 ];
+                                // var mycart = [
+                                //   {
+                                //     "id": "${product[index]['id']}",
+                                //     "pn": "${product[index]['product_name']}",
+                                //     " pc": "${product[index]['pro_cat']}",
+                                //     "sp": "${product[index]['sales_prise']}",
+                                //     "p": "$1",
+                                //     "s": "$x",
+                                //   }
+                                // ];
 
                                 return InkWell(
                                   onTap: () {
+                                    y += x;
+                                    x = y;
+
                                     // Update items with the same ID
                                     for (var newItem in cart) {
                                       var existingItem = tempCart.firstWhere((item) => item.id == newItem.id, orElse: () {
                                         tempCart.addAll(cart);
-                                        return null;
+                                        return ListItem(1, pName, cName, pcs, Qnt, cartP);
                                       });
                                       if (existingItem != null) {
                                         existingItem.Qnt += 1;
-                                        existingItem.cartP = x + existingItem.cartP;
+                                        existingItem.cartP = n + existingItem.cartP;
 
                                         print(existingItem.pcs);
                                       }
                                     }
                                     setState(() {
+                                      price = x.toString();
                                       cart;
-
-                                      y = x + y;
-                                      print(tempCart);
-                                      price = y.toString();
                                     });
                                   },
                                   child: Padding(
@@ -383,77 +397,90 @@ class _AddTransactionState extends State<AddTransaction> {
                             )),
                       ],
                     ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: tempCart.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Container(
-                              padding: const EdgeInsets.all(12.0),
-                              width: w,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: const Color.fromARGB(255, 230, 255, 230)),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(tempCart[index].pName,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: Color(0xff7c7c7c),
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                      Text(tempCart[index].cartP.toString(),
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: Color(0xff7c7c7c),
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                                            decoration:
-                                                BoxDecoration(borderRadius: BorderRadius.circular(2), color: Color.fromARGB(255, 149, 153, 149)),
-                                            child: Text(tempCart[index].cName,
+                    tempCart.isEmpty
+                        ? Container(
+                            height: h / 4,
+                            alignment: Alignment.bottomCenter,
+                            child: Text("No Product",
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: Color(0xff7c7c7c),
+                                  fontWeight: FontWeight.normal,
+                                )),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                              itemCount: tempCart.length,
+                              itemBuilder: (context, index) {
+                                print(tempCart[index].cartP.toString());
+                                return Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    width: w,
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(10), color: const Color.fromARGB(255, 230, 255, 230)),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(tempCart[index].pName,
                                                 style: TextStyle(
-                                                  fontSize: 8.sp,
-                                                  color: white,
+                                                  fontSize: 12.sp,
+                                                  color: Color(0xff7c7c7c),
                                                   fontWeight: FontWeight.bold,
                                                 )),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          Text(tempCart[index].pcs,
-                                              style: TextStyle(
-                                                fontSize: 8.sp,
-                                                color: Color(0xff7c7c7c),
-                                                fontWeight: FontWeight.bold,
-                                              )),
-                                        ],
-                                      ),
-                                      Text(tempCart[index].Qnt.toString(),
-                                          style: TextStyle(
-                                            fontSize: 8.sp,
-                                            color: Color(0xff7c7c7c),
-                                            fontWeight: FontWeight.bold,
-                                          ))
-                                    ],
+                                            Text(tempCart[index].cartP.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  color: Color(0xff7c7c7c),
+                                                  fontWeight: FontWeight.bold,
+                                                )),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(2), color: Color.fromARGB(255, 149, 153, 149)),
+                                                  child: Text(tempCart[index].cName,
+                                                      style: TextStyle(
+                                                        fontSize: 8.sp,
+                                                        color: white,
+                                                        fontWeight: FontWeight.bold,
+                                                      )),
+                                                ),
+                                                SizedBox(
+                                                  width: 8,
+                                                ),
+                                                Text(tempCart[index].pcs,
+                                                    style: TextStyle(
+                                                      fontSize: 8.sp,
+                                                      color: Color(0xff7c7c7c),
+                                                      fontWeight: FontWeight.bold,
+                                                    )),
+                                              ],
+                                            ),
+                                            Text(tempCart[index].Qnt.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 8.sp,
+                                                  color: Color(0xff7c7c7c),
+                                                  fontWeight: FontWeight.bold,
+                                                ))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
-                    )
+                          )
                   ],
                 ),
               ),
@@ -476,10 +503,10 @@ class _AddTransactionState extends State<AddTransaction> {
                     color: Color.fromARGB(255, 210, 240, 210), // Button color
                     child: InkWell(
                       splashColor: Color.fromARGB(255, 104, 234, 108), // Splash color
-                      onTap: () {
+                      onTap: () async {
                         setState(() {
+                          saveData();
                           // key.currentState!.expand();
-                          _expansionStatus = key.currentState!.expansionStatus;
                         });
                       },
                       child: SizedBox(width: 56, height: 56, child: Icon(Icons.source_outlined)),
@@ -496,7 +523,20 @@ class _AddTransactionState extends State<AddTransaction> {
                   buttonHeight: h / 14,
                   onTap: () {
                     setState(() {
-                      key.currentState!.expand();
+                      if (tempCart.isEmpty) {
+                        key.currentState!.expand();
+                      } else {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              duration: Duration(milliseconds: 400),
+                              child: Pay(summery: tempCart, pName: pName),
+                              inheritTheme: true,
+                              ctx: context),
+                        );
+                      }
+
                       // _expansionStatus = key.currentState!.expansionStatus;
                     });
                   },
@@ -507,6 +547,45 @@ class _AddTransactionState extends State<AddTransaction> {
             ],
           ),
         ));
+  }
+
+  saveData() async {
+    DateTime now = DateTime.now();
+
+    String formattedDate = DateFormat('d MMM,h:mm a').format(now);
+    print(formattedDate);
+    List cart = [];
+    int y = 0;
+    List.generate(tempCart.length, (index) async {
+      var list = [
+        {
+          "id": "${tempCart[index].id}",
+          "pName": "${tempCart[index].pName}",
+          "cName": "${tempCart[index].cName}",
+          "pcs": "${tempCart[index].pcs}",
+          //
+          "qnt": "${tempCart[index].Qnt}",
+          "cartP": "${tempCart[index].cartP}",
+          //
+          "date_time": "$formattedDate"
+        }
+      ];
+      int x = tempCart[index].Qnt;
+
+      cart.addAll(list);
+      y += x;
+    });
+    print(y);
+    var stringList = cart;
+
+    if (tempCart.isNotEmpty) {
+      var res =
+          await sqlDb.insertData('INSERT INTO cart ("temp_cart","date_time","item","price") VALUES("$stringList","$formattedDate","$y","$price" )');
+      print(res);
+      List data = await sqlDb.readData("Select * from cart ");
+      print(data);
+    }
+    loadCart();
   }
 }
 
