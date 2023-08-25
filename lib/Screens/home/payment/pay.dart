@@ -5,6 +5,7 @@ import 'package:fdottedline_nullsafety/fdottedline__nullsafety.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nova_pos/Screens/home/payment/receipt.dart';
+import 'package:nova_pos/class/model/list_item_model.dart';
 import 'package:nova_pos/color/colors.dart';
 import 'package:nova_pos/widgets/custom_textfield.dart';
 import 'package:page_transition/page_transition.dart';
@@ -75,7 +76,8 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    getCategory();
+    print(widget.summery);
+    // getCategory();
     super.initState();
     _tabController = new TabController(
       vsync: this,
@@ -86,6 +88,9 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
     setState(() {
       duePrice = widget.total;
       pay = widget.total;
+      duePrice = 0;
+      pay = widget.total;
+      change = true;
     });
     _tabController!.addListener(() {
       if (_tabController!.index == 0) {
@@ -274,7 +279,7 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  "${widget.summery[index].Qnt.toString()} pcs",
+                                                  "${widget.summery[index].qnt.toString()} pcs",
                                                   style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 13.sp),
                                                 ),
                                                 Container(
@@ -308,13 +313,15 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                                   );
                                 },
                               ),
-                              FDottedLine(
-                                color: Color.fromARGB(255, 207, 175, 163),
-                                width: w,
-                                strokeWidth: 2.0,
-                                dottedLength: 10.0,
-                                space: 2.0,
-                              ),
+                              widget.summery.isEmpty
+                                  ? Container()
+                                  : FDottedLine(
+                                      color: Color.fromARGB(255, 207, 175, 163),
+                                      width: w,
+                                      strokeWidth: 2.0,
+                                      dottedLength: 10.0,
+                                      space: 2.0,
+                                    ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
                                 child: Row(
@@ -857,7 +864,12 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
                               duration: Duration(milliseconds: 400),
-                              child: Receipt(),
+                              child: Receipt(
+                                  payment: pay.toString(),
+                                  rest: duePrice.toString(),
+                                  total: widget.total.toString(),
+                                  change: change,
+                                  summery: widget.summery),
                               inheritTheme: true,
                               ctx: context),
                         );

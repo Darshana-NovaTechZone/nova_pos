@@ -30,7 +30,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
   TextEditingController catName = TextEditingController(text: "Unclassified");
   TextEditingController sku = TextEditingController();
   TextEditingController barcode = TextEditingController();
-  TextEditingController salePrice = TextEditingController();
+  TextEditingController salePrice = TextEditingController(text: '0');
   TextEditingController productCost = TextEditingController();
   // final salePrice = MoneyMaskedTextController(initialValue: 0);
   TextEditingController unit = TextEditingController(text: "pcs");
@@ -103,7 +103,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
     var h = MediaQuery.of(context).size.height;
     var w = MediaQuery.of(context).size.width;
     TextEditingController barcode = TextEditingController(text: result);
-    var p = MediaQuery.paddingOf(context).top;
+
     return GestureDetector(
       //onTap: () => FocusScope.of(context).unfocus(),
       /// > flutter 2.0

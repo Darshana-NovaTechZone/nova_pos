@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:nova_pos/class/model/list_item_model.dart';
 import 'package:nova_pos/color/colors.dart';
 
 import 'package:page_transition/page_transition.dart';
@@ -18,8 +21,9 @@ import '../../payment/pay.dart';
 import '../../product/add_category.dart';
 
 class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key, required this.loadCart});
+  const AddTransaction({super.key, required this.loadCart, required this.myList});
   final Function loadCart;
+  final List<ListItem> myList;
 
   @override
   State<AddTransaction> createState() => _AddTransactionState();
@@ -43,6 +47,8 @@ class _AddTransactionState extends State<AddTransaction> {
   int Qnt = 0;
   int cartP = 0;
   String id = "";
+  int item = 0;
+  int addItem = 0;
   ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
   loadData() async {
     allProduct = await sqlDb.readData("Select * from add_product ");
@@ -100,9 +106,29 @@ class _AddTransactionState extends State<AddTransaction> {
     });
   }
 
+  data() {
+    setState(() {
+      tempCart = widget.myList;
+    });
+    for (var newItem in tempCart) {
+      var existingItem = widget.myList.firstWhere((item) {
+        print(newItem.id);
+        print('ffffffffffffsssssssssssfffffffffffffffffffffffffffffffffffffffff');
+        print(newItem.id);
+        print('fffffffffffffffffffffffffffffffffffffffffffffffffffff');
+        return item.id == newItem.id;
+      }, orElse: () {
+        return ListItem(1, pName, cName, pcs, Qnt, cartP);
+      });
+      if (existingItem != null) {}
+    }
+  }
+
   @override
   void initState() {
+    data();
     loadData();
+
     // TODO: implement initState
     super.initState();
   }
@@ -221,19 +247,15 @@ class _AddTransactionState extends State<AddTransaction> {
                               itemCount: product.length,
                               itemBuilder: (context, index) {
                                 String str = product[index]['sales_prise'];
+                                print(str);
                                 String substr = ",";
                                 String replacement = "";
                                 String newStr = str.replaceAll(substr, replacement);
                                 String sub = ".";
                                 String rep = "";
                                 String pPrice = newStr.replaceAll(sub, rep);
-
                                 int n = int.parse(pPrice);
-                                // pName = product[index]['product_name'];
-                                // cName = product[index]['pro_cat'];
-                                // pcs = product[index]['sales_prise'];
-                                // Qnt += "1";
-                                // cartP = pPrice;
+
                                 List<ListItem> cart = [
                                   ListItem(
                                     product[index]['id'],
@@ -243,25 +265,8 @@ class _AddTransactionState extends State<AddTransaction> {
                                     1,
                                     n,
                                   ),
-                                  // {
-                                  //   id = product[index]['id'].toString(),
-                                  //   pName = product[index]['product_name'],
-                                  //   cName = product[index]['pro_cat'],
-                                  //   pcs = product[index]['sales_prise'],
-                                  //   Qnt += "1",
-                                  //   cartP = pPrice,
-                                  // }
                                 ];
-                                // var mycart = [
-                                //   {
-                                //     "id": "${product[index]['id']}",
-                                //     "pn": "${product[index]['product_name']}",
-                                //     " pc": "${product[index]['pro_cat']}",
-                                //     "sp": "${product[index]['sales_prise']}",
-                                //     "p": "$1",
-                                //     "s": "$x",
-                                //   }
-                                // ];
+                                print(product[index]['id']);
 
                                 return InkWell(
                                   onTap: () {
@@ -279,15 +284,17 @@ class _AddTransactionState extends State<AddTransaction> {
 
                                     // Update items with the same ID
                                     for (var newItem in cart) {
-                                      var existingItem = tempCart.firstWhere((item) => item.id == newItem.id, orElse: () {
+                                      var existingItem = tempCart.firstWhere((item) {
+                                        print(item.id);
+                                        return item.id == newItem.id;
+                                      }, orElse: () {
                                         tempCart.addAll(cart);
                                         return ListItem(1, pName, cName, pcs, Qnt, cartP);
                                       });
                                       if (existingItem != null) {
-                                        existingItem.Qnt += 1;
-                                        existingItem.cartP = n + existingItem.cartP;
+                                        existingItem.qnt += 1;
 
-                                        print(existingItem.pcs);
+                                        existingItem.cartP = n + existingItem.cartP;
                                       }
                                     }
                                     setState(() {
@@ -474,7 +481,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                                     )),
                                               ],
                                             ),
-                                            Text(tempCart[index].Qnt.toString(),
+                                            Text(tempCart[index].qnt.toString(),
                                                 style: TextStyle(
                                                   fontSize: 8.sp,
                                                   color: Color(0xff7c7c7c),
@@ -562,57 +569,52 @@ class _AddTransactionState extends State<AddTransaction> {
 
     String formattedDate = DateFormat('d MMM,h:mm a').format(now);
     print(formattedDate);
-    List cart = [];
+    List<Map<String, dynamic>> cart = [];
     int y = 0;
+    List<ListItem> persons = [];
+    var cart_id;
+    String item = "1";
+    cart_id = await sqlDb.insertData('INSERT INTO all_cart ("cart_time","price","items") VALUES ("$formattedDate","$price","$item")');
+
+    print(cart_id);
     List.generate(tempCart.length, (index) async {
-      var list = [
-        {
-          "id": "${tempCart[index].id}",
-          "pName": "${tempCart[index].pName}",
-          "cName": "${tempCart[index].cName}",
-          "pcs": "${tempCart[index].pcs}",
-          //
-          "qnt": "${tempCart[index].Qnt}",
-          "cartP": "${tempCart[index].cartP}",
-          //
-          "date_time": "$formattedDate"
-        }
-      ];
-      int x = tempCart[index].Qnt;
+      int x = tempCart[index].qnt;
 
-      cart.addAll(list);
+      cart.add(tempCart[index].toMap());
+
       y += x;
-    });
-    print(y);
-    var stringList = cart;
+      if (tempCart.isNotEmpty) {
+        var res = await sqlDb.insertData(
+            "INSERT INTO active_cart ('cart_name','c_name','date_time','item','item_price','price','all_cart_id','cart_id') VALUES('${tempCart[index].pName}','${tempCart[index].cName}','$formattedDate','$x','${tempCart[index].pcs}','$price','$cart_id','${tempCart[index].id}')");
 
-    if (tempCart.isNotEmpty) {
-      var res =
-          await sqlDb.insertData('INSERT INTO cart ("temp_cart","date_time","item","price") VALUES("$stringList","$formattedDate","$y","$price" )');
-      print(res);
-      List data = await sqlDb.readData("Select * from cart ");
-      print(data);
-    }
+        print(res);
+      }
+    });
+    var data = await sqlDb.readData("Select * from active_cart ");
+
+    Logger().d(data);
+    // await sqlDb.updateData(' UPDATE  all_cart SET  items = "$y" WHERE id = "$cart_id"');
+
     loadCart();
   }
 }
 
-class ListItem {
-  int id;
-  String pName;
-  String cName;
-  String pcs;
-  int Qnt;
-  int cartP;
+// class ListItem {
+//   int id;
+//   String pName;
+//   String cName;
+//   String pcs;
+//   int qnt;
+//   int cartP;
 
-  // other attributes
+//   // other attributes
 
-  ListItem(
-    this.id,
-    this.pName,
-    this.cName,
-    this.pcs,
-    this.Qnt,
-    this.cartP,
-  );
-}
+//   ListItem(
+//     this.id,
+//     this.pName,
+//     this.cName,
+//     this.pcs,
+//     this.qnt,
+//     this.cartP,
+//   );
+// }

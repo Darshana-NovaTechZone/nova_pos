@@ -15,8 +15,8 @@ class SqlDb {
 
   intialDb() async {
     String databasepath = await getDatabasesPath();
-    String path = join(databasepath, 'aaf.db');
-    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 3, onUpgrade: _onUpgrade);
+    String path = join(databasepath, 'bsdsgssbssss.db');
+    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 15, onUpgrade: _onUpgrade);
     return mydb;
   }
 
@@ -129,10 +129,80 @@ class SqlDb {
     await db.execute('''
   CREATE TABLE "cart" (
     "id" INTEGER  NOT NULL PRIMARY KEY  ,
-     "temp_cart" TEXT NOT NULL,
+     "cart" TEXT NOT NULL,
        "date_time" TEXT NOT NULL,
        "item" TEXT NOT NULL,
        "price" TEXT NOT NULL
+   
+   
+     
+      
+ 
+
+
+  )
+ ''');
+    await db.execute('''
+  CREATE TABLE "active_cart" (
+    "id" INTEGER  NOT NULL PRIMARY KEY  ,
+     "cart_name" TEXT NOT NULL,
+      "c_name" TEXT NOT NULL,
+       "date_time" TEXT NOT NULL,
+       "item" TEXT NOT NULL,
+       "item_price" TEXT NOT NULL,
+       "price" TEXT NOT NULL,
+        "all_cart_id" TEXT NOT NULL,
+         "cart_id" INTEGER NOT NULL
+   
+   
+     
+      
+ 
+
+
+  )
+ ''');
+    await db.execute('''
+  CREATE TABLE "add_expense" (
+    "id" INTEGER  NOT NULL PRIMARY KEY  ,
+     "nominal" TEXT NOT NULL,
+       "notes" TEXT NOT NULL,
+       "p_lable" TEXT NOT NULL,
+       "date_time" TEXT NOT NULL,
+            "r_id" TEXT NOT NULL
+   
+   
+     
+      
+ 
+
+
+  )
+ ''');
+    await db.execute('''
+  CREATE TABLE "add_revenue" (
+    "id" INTEGER  NOT NULL PRIMARY KEY  ,
+     "sale_prise" TEXT NOT NULL,
+       "product_cost" TEXT NOT NULL,
+       "" TEXT NOT NULL,
+       "date_time" TEXT NOT NULL,
+            "r_id" TEXT NOT NULL
+   
+   
+     
+      
+ 
+
+
+  )
+ ''');
+    await db.execute('''
+  CREATE TABLE "all_cart" (
+    "id" INTEGER  NOT NULL PRIMARY KEY  ,
+     "cart_time" TEXT NOT NULL,
+      "price" TEXT NOT NULL,
+       "items" TEXT NOT NULL
+      
    
    
      
