@@ -21,9 +21,10 @@ import '../../payment/pay.dart';
 import '../../product/add_category.dart';
 
 class AddTransaction extends StatefulWidget {
-  const AddTransaction({super.key, required this.loadCart, required this.myList});
+  const AddTransaction({super.key, required this.loadCart, required this.myList, required this.priceFromeHome});
   final Function loadCart;
   final List<ListItem> myList;
+  final String priceFromeHome;
 
   @override
   State<AddTransaction> createState() => _AddTransactionState();
@@ -107,8 +108,13 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   data() {
+    int newPrice = int.parse(widget.priceFromeHome);
     setState(() {
       tempCart = widget.myList;
+      y = newPrice;
+      price = widget.priceFromeHome;
+      print(widget.myList);
+      print('ffffffffffffsssssssssssfffffffffffffffffffffffffffffffffffffffff');
     });
     for (var newItem in tempCart) {
       var existingItem = widget.myList.firstWhere((item) {
@@ -126,6 +132,9 @@ class _AddTransactionState extends State<AddTransaction> {
 
   @override
   void initState() {
+    setState(() {
+      tempCart = widget.myList;
+    });
     data();
     loadData();
 
@@ -585,7 +594,7 @@ class _AddTransactionState extends State<AddTransaction> {
       y += x;
       if (tempCart.isNotEmpty) {
         var res = await sqlDb.insertData(
-            "INSERT INTO active_cart ('cart_name','c_name','date_time','item','item_price','price','all_cart_id','cart_id') VALUES('${tempCart[index].pName}','${tempCart[index].cName}','$formattedDate','$x','${tempCart[index].pcs}','$price','$cart_id','${tempCart[index].id}')");
+            "INSERT INTO active_cart ('cart_name','c_name','date_time','item','item_price','price','all_cart_id','cart_id','status') VALUES('${tempCart[index].pName}','${tempCart[index].cName}','$formattedDate','$x','${tempCart[index].pcs}','${tempCart[index].cartP}','$cart_id','${tempCart[index].id}','0')");
 
         print(res);
       }

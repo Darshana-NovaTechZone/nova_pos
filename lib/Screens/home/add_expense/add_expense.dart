@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nova_pos/Screens/home/payment/receipt.dart';
 import 'package:nova_pos/widgets/mainButton.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../color/colors.dart';
@@ -14,7 +16,8 @@ class AddExpense extends StatefulWidget {
 
 class _AddExpenseState extends State<AddExpense> {
   bool dateTime = false;
-
+  TextEditingController norminal = TextEditingController();
+  TextEditingController note = TextEditingController();
   DateTime selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
   String formattedDate = "";
@@ -33,7 +36,6 @@ class _AddExpenseState extends State<AddExpense> {
   }
 
   data() {
-    
     formattedDate = DateFormat(' d E MMM yyyy ').format(selectedDate);
     setState(() {
       formattedDate;
@@ -269,6 +271,16 @@ class _AddExpenseState extends State<AddExpense> {
                           FocusScope.of(context).unfocus();
                           labeTap = false;
                         });
+
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              duration: Duration(milliseconds: 400),
+                              child: Receipt(payment: "", rest: "", total: "", change: true, summery: []),
+                              inheritTheme: true,
+                              ctx: context),
+                        );
                       },
                       child: Container(
                         alignment: Alignment.centerLeft,

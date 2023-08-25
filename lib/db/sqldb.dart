@@ -15,8 +15,8 @@ class SqlDb {
 
   intialDb() async {
     String databasepath = await getDatabasesPath();
-    String path = join(databasepath, 'bsdsgssbssss.db');
-    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 15, onUpgrade: _onUpgrade);
+    String path = join(databasepath, 'bsdsgssbsssss.db');
+    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 16, onUpgrade: _onUpgrade);
     return mydb;
   }
 
@@ -152,7 +152,9 @@ class SqlDb {
        "item_price" TEXT NOT NULL,
        "price" TEXT NOT NULL,
         "all_cart_id" TEXT NOT NULL,
-         "cart_id" INTEGER NOT NULL
+         "cart_id" INTEGER NOT NULL,
+         "status" INTEGER NOT NULL
+
    
    
      
@@ -180,13 +182,19 @@ class SqlDb {
   )
  ''');
     await db.execute('''
-  CREATE TABLE "add_revenue" (
+  CREATE TABLE "trance_action_expense" (
     "id" INTEGER  NOT NULL PRIMARY KEY  ,
-     "sale_prise" TEXT NOT NULL,
-       "product_cost" TEXT NOT NULL,
-       "" TEXT NOT NULL,
-       "date_time" TEXT NOT NULL,
-            "r_id" TEXT NOT NULL
+     "date" TEXT NOT NULL,
+       "r_id" TEXT NOT NULL,
+       "note" TEXT NOT NULL,
+        "sub_total" TEXT NOT NULL,
+       "grand_total" TEXT NOT NULL,
+       "payment" TEXT NOT NULL,
+       "change" TEXT NOT NULL,
+       "status" TEXT NOT NULL,
+       "is_expense" TEXT NOT NULL
+      
+          
    
    
      
