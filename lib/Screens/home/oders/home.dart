@@ -300,7 +300,7 @@ class _HomeState extends State<Home> {
 
   localCart(String id, String price) async {
     print(id);
-    List data = await sqlDb.readData("Select * from active_cart where all_cart_id = '$id' ");
+    List data = await sqlDb.readData("Select * from active_cart where all_cart_id = '$id'  ");
 
     List cartData = data;
     print(cartData);

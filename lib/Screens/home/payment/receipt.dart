@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:nova_pos/class/model/list_item_model.dart';
 import 'package:nova_pos/widgets/mainButton.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../db/sqldb.dart';
 import '../../../widgets/receipt_button.dart';
 import '../oders/add_transaction/add_transaction.dart';
 import 'print/print.dart';
@@ -24,6 +26,7 @@ class Receipt extends StatefulWidget {
 class _ReceiptState extends State<Receipt> {
   DateTime selectedDate = DateTime.now();
   String formattedDate = "";
+  SqlDb sqlDb = SqlDb();
   data() {
     formattedDate = DateFormat('yyyyMMddHHmss').format(selectedDate);
     setState(() {
@@ -177,7 +180,8 @@ class _ReceiptState extends State<Receipt> {
               ReceiptButton(
                   buttonHeight: h / 13,
                   color: Color.fromARGB(255, 104, 234, 108),
-                  onTap: () {
+                  onTap: () async {
+                    await saveData();
                     Navigator.push(
                       context,
                       PageTransition(
@@ -203,7 +207,8 @@ class _ReceiptState extends State<Receipt> {
               MainButton(
                   buttonHeight: h / 13,
                   color: Color.fromARGB(255, 104, 234, 108),
-                  onTap: () {
+                  onTap: () async {
+                    await saveData();
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
@@ -215,5 +220,32 @@ class _ReceiptState extends State<Receipt> {
         ),
       ),
     );
+  }
+
+  saveData() async {
+    DateTime now = DateTime.now();
+
+    String date = DateFormat('d MMM,h:mm a').format(now);
+
+    var transId;
+
+    transId = await sqlDb.insertData(
+        'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense") VALUES ("$date","Nova-Pos/$formattedDate-lk","hhh","${widget.total.toString()}","${widget.total.toString()}","${widget.payment}","${widget.change}","${widget.rest}","0")');
+
+    print(transId);
+    List.generate(widget.summery.length, (index) async {
+      int x = widget.summery[index].qnt;
+
+      if (widget.summery.isNotEmpty) {
+        var res = await sqlDb.insertData(
+            "INSERT INTO active_cart ('cart_name','c_name','date_time','item','item_price','price','all_cart_id','cart_id','status') VALUES('${widget.summery[index].pName}','${widget.summery[index].cName}','$date','$x','${widget.summery[index].pcs}','${widget.summery[index].cartP}','$transId','${widget.summery[index].id}','1')");
+
+        print(res);
+      }
+    });
+    var data = await sqlDb.readData("Select * from active_cart ");
+
+    Logger().d(data);
+    // await sqlDb.updateData(' UPDATE  all_cart SET  items = "$y" WHERE id = "$cart_id"');
   }
 }

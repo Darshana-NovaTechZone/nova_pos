@@ -31,7 +31,7 @@ class _AddProductState extends State<AddProduct> with SingleTickerProviderStateM
   TextEditingController sku = TextEditingController();
   TextEditingController barcode = TextEditingController();
   TextEditingController salePrice = TextEditingController(text: '0');
-  TextEditingController productCost = TextEditingController();
+  TextEditingController productCost = TextEditingController(text: "0");
   // final salePrice = MoneyMaskedTextController(initialValue: 0);
   TextEditingController unit = TextEditingController(text: "pcs");
   // final productCost = MoneyMaskedTextController(initialValue: 0);

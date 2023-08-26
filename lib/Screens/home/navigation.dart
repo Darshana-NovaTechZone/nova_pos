@@ -6,7 +6,7 @@ import 'package:nova_pos/Screens/Splash/testing.dart';
 import 'package:nova_pos/Screens/get_details/get_deatails.dart';
 import 'package:nova_pos/Screens/home/product/product.dart';
 import 'package:nova_pos/Screens/home/summery.dart';
-import 'package:nova_pos/Screens/home/today.dart';
+import 'package:nova_pos/Screens/home/action/today.dart';
 import 'package:nova_pos/color/colors.dart';
 import 'package:nova_pos/widgets/mainButton.dart';
 import 'package:sizer/sizer.dart';

@@ -6,6 +6,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../color/colors.dart';
+import 'expence_receipt.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({super.key});
@@ -195,6 +196,7 @@ class _AddExpenseState extends State<AddExpense> {
                 child: SizedBox(
                   height: h / 15,
                   child: TextField(
+                    controller: norminal,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
@@ -233,6 +235,7 @@ class _AddExpenseState extends State<AddExpense> {
                 child: SizedBox(
                   height: h / 15,
                   child: TextField(
+                    controller: note,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(left: 12, top: 8, bottom: 8),
                       prefixIcon: Icon(
@@ -271,16 +274,6 @@ class _AddExpenseState extends State<AddExpense> {
                           FocusScope.of(context).unfocus();
                           labeTap = false;
                         });
-
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              duration: Duration(milliseconds: 400),
-                              child: Receipt(payment: "", rest: "", total: "", change: true, summery: []),
-                              inheritTheme: true,
-                              ctx: context),
-                        );
                       },
                       child: Container(
                         alignment: Alignment.centerLeft,
@@ -345,7 +338,25 @@ class _AddExpenseState extends State<AddExpense> {
         ),
         bottomSheet: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: MainButton(buttonHeight: h / 13, color: Color(0xfff77575), onTap: () {}, text: "SAVE", width: w),
+          child: MainButton(
+              buttonHeight: h / 13,
+              color: Color(0xfff77575),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.rightToLeft,
+                      duration: Duration(milliseconds: 400),
+                      child: ExpenceReceipt(
+                        nominal: norminal.text,
+                        note: note.text,
+                      ),
+                      inheritTheme: true,
+                      ctx: context),
+                );
+              },
+              text: "SAVE",
+              width: w),
         ),
       ),
     );

@@ -50,6 +50,7 @@ class _AddTransactionState extends State<AddTransaction> {
   String id = "";
   int item = 0;
   int addItem = 0;
+  int cost = 0;
   ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
   loadData() async {
     allProduct = await sqlDb.readData("Select * from add_product ");
@@ -256,7 +257,7 @@ class _AddTransactionState extends State<AddTransaction> {
                               itemCount: product.length,
                               itemBuilder: (context, index) {
                                 String str = product[index]['sales_prise'];
-                                print(str);
+
                                 String substr = ",";
                                 String replacement = "";
                                 String newStr = str.replaceAll(substr, replacement);
@@ -275,7 +276,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                     n,
                                   ),
                                 ];
-                                print(product[index]['id']);
+                                print(product[index]['product_cost']);
 
                                 return InkWell(
                                   onTap: () {
@@ -294,7 +295,6 @@ class _AddTransactionState extends State<AddTransaction> {
                                     // Update items with the same ID
                                     for (var newItem in cart) {
                                       var existingItem = tempCart.firstWhere((item) {
-                                        print(item.id);
                                         return item.id == newItem.id;
                                       }, orElse: () {
                                         tempCart.addAll(cart);
@@ -579,8 +579,7 @@ class _AddTransactionState extends State<AddTransaction> {
     String formattedDate = DateFormat('d MMM,h:mm a').format(now);
     print(formattedDate);
     List<Map<String, dynamic>> cart = [];
-    int y = 0;
-    List<ListItem> persons = [];
+
     var cart_id;
     String item = "1";
     cart_id = await sqlDb.insertData('INSERT INTO all_cart ("cart_time","price","items") VALUES ("$formattedDate","$price","$item")');
@@ -602,28 +601,7 @@ class _AddTransactionState extends State<AddTransaction> {
     var data = await sqlDb.readData("Select * from active_cart ");
 
     Logger().d(data);
-    // await sqlDb.updateData(' UPDATE  all_cart SET  items = "$y" WHERE id = "$cart_id"');
 
     loadCart();
   }
 }
-
-// class ListItem {
-//   int id;
-//   String pName;
-//   String cName;
-//   String pcs;
-//   int qnt;
-//   int cartP;
-
-//   // other attributes
-
-//   ListItem(
-//     this.id,
-//     this.pName,
-//     this.cName,
-//     this.pcs,
-//     this.qnt,
-//     this.cartP,
-//   );
-// }
