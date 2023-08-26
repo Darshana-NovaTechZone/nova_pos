@@ -70,7 +70,9 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
   final ImagePicker picker = ImagePicker();
   //we can upload image from camera or from gallery based on parameter
   List catList = [];
-  int value = Colors.red.value;
+  int value = const Color.fromRGBO(244, 67, 54, 1).value;
+  int cost = 0;
+  int profit = 0;
   localCart() async {
     List data = await sqlDb.readData(
         "Select * from active_cart LEFT JOIN add_product ON  active_cart.cart_id =add_product.id where all_cart_id = '${widget.cartId}' and status = '1' ");
@@ -81,13 +83,21 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
     List.generate(cartData.length, (index) {
       int item = int.parse(cartData[index]['item']);
       int cart_price = int.parse(cartData[index]['price']);
+      int cart_cost = int.parse(cartData[index]['product_cost']);
+      cost += cart_cost;
+
       List<ActionItem> cart = [
         ActionItem(cartData[index]['cart_id'], cartData[index]['cart_name'], cartData[index]['c_name'], cartData[index]['item_price'], item,
             cart_price, cartData[index]['img']),
       ];
       addcartList.addAll(cart);
     });
+    int c = int.parse(widget.sgTotal);
+    profit = c - cost;
+    print(cost);
     setState(() {
+      profit;
+      cost;
       addcartList;
     });
   }
@@ -307,9 +317,18 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                           ],
                         ),
                         Divider(),
-                        Text(
-                          "Note",
-                          style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 8.sp, fontWeight: FontWeight.bold),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Note",
+                              style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 8.sp, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              widget.note,
+                              style: TextStyle(color: const Color.fromARGB(255, 121, 121, 121), fontSize: 10.sp, fontWeight: FontWeight.normal),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 8),
                         Container(
@@ -490,7 +509,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                 style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                "\$${widget.pCost}",
+                                "\$$cost",
                                 style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                               ),
                             ],
@@ -506,7 +525,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                 style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                "\$${widget.pCost}",
+                                profit.toString(),
                                 style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                               ),
                             ],

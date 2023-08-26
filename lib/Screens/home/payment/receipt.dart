@@ -230,7 +230,7 @@ class _ReceiptState extends State<Receipt> {
     var transId;
 
     transId = await sqlDb.insertData(
-        'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense") VALUES ("$date","Nova-Pos/$formattedDate-lk","hhh","${widget.total.toString()}","${widget.total.toString()}","${widget.payment}","${widget.change}","${widget.rest}","0")');
+        'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense") VALUES ("$date","Nova-Pos/$formattedDate-lk","-","${widget.total.toString()}","${widget.total.toString()}","${widget.payment}","${widget.change}","${widget.rest}","0")');
 
     print(transId);
     List.generate(widget.summery.length, (index) async {
