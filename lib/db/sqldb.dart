@@ -15,8 +15,8 @@ class SqlDb {
 
   intialDb() async {
     String databasepath = await getDatabasesPath();
-    String path = join(databasepath, 'aav.db');
-    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 18, onUpgrade: _onUpgrade);
+    String path = join(databasepath, 'aasa.db');
+    Database mydb = await openDatabase(path, onCreate: _onCreate, version: 4, onUpgrade: _onUpgrade);
     return mydb;
   }
 
@@ -192,7 +192,11 @@ class SqlDb {
        "payment" TEXT NOT NULL,
        "change" TEXT NOT NULL,
        "status" TEXT NOT NULL,
-       "is_expense" TEXT NOT NULL
+       "is_expense" TEXT NOT NULL,
+        "is_revenue" TEXT NOT NULL,
+       "expense" TEXT NOT NULL,
+       "revenue" TEXT NOT NULL,
+       "cost" INTEGER  NOT NULL
       
           
    
@@ -210,6 +214,21 @@ class SqlDb {
      "cart_time" TEXT NOT NULL,
       "price" TEXT NOT NULL,
        "items" TEXT NOT NULL
+      
+   
+   
+     
+      
+ 
+
+
+  )
+ ''');
+    await db.execute('''
+  CREATE TABLE "home" (
+    "id" INTEGER  NOT NULL PRIMARY KEY  ,
+     "status" TEXT NOT NULL
+    
       
    
    

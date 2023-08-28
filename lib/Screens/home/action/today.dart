@@ -4,10 +4,13 @@ import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../color/colors.dart';
+import '../../../curruncy/curruncy.dart';
 import '../../../db/sqldb.dart';
 
 class Today extends StatefulWidget {
-  const Today({super.key});
+  const Today({
+    super.key,
+  });
 
   @override
   State<Today> createState() => _TodayState();
@@ -19,27 +22,34 @@ class _TodayState extends State<Today> {
   SqlDb sqlDb = SqlDb();
   final TextEditingController searchController = TextEditingController();
   data() async {
-    List<Map<String, dynamic>> dataa = await sqlDb.readData("  SELECT *FROM trance_action_expense ");
     List<Map<String, dynamic>> data = await sqlDb.readData("  SELECT *FROM trance_action_expense ");
 
     setState(() {
-      product = data;
-      print(product[0]['date']);
-      print(product);
+      if (data.isNotEmpty) {
+        product = data;
+        actionList = data;
+      }
     });
   }
 
   void _runFilter(String enteredKeyword) {
+    print(enteredKeyword);
+    product = actionList;
     List<Map<String, dynamic>> results = [];
     if (enteredKeyword.isEmpty) {
+      print('ddddddddddddddddddddd');
       // if the search field is empty or only contains white-space, we'll display all users
       results = actionList;
-    } else if (actionList.where((user) => user["product_name"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList().isNotEmpty) {
-      results = actionList.where((user) => user["product_name"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList();
-    } else if (actionList.where((user) => user["barcode"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList().isNotEmpty) {
-      results = actionList.where((user) => user["barcode"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList();
-    } else if (actionList.where((user) => user["sku"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList().isNotEmpty) {
-      results = actionList.where((user) => user["sku"].toLowerCase().contains(enteredKeyword.toLowerCase())).toList();
+    } else {
+      print('dddaaaaaaaaaaaaaadddddddddddddddddd');
+      print(product);
+      setState(() {
+        results = product.where((user) {
+          return user["note"].toLowerCase().contains(enteredKeyword.toLowerCase()) ||
+              user["r_id"].toLowerCase().contains(enteredKeyword.toLowerCase()) ||
+              user["r_id"].toLowerCase().contains(enteredKeyword.toLowerCase());
+        }).toList();
+      });
     }
 
     // Refresh the UI
@@ -115,9 +125,7 @@ class _TodayState extends State<Today> {
             child: SizedBox(
               height: h / 15,
               child: TextField(
-                onChanged: (value) {
-                  _runFilter(value);
-                },
+                onChanged: (value) => _runFilter(value),
                 controller: searchController,
                 textAlign: TextAlign.left,
                 decoration: InputDecoration(
@@ -134,7 +142,7 @@ class _TodayState extends State<Today> {
                     filled: true,
                     hintStyle: TextStyle(color: Color(0xffbfbfbf)),
                     fillColor: Colors.white70,
-                    hintText: "Name / SKU / Barcode"),
+                    hintText: "Invoice / Notes"),
               ),
             ),
           ),
@@ -182,6 +190,7 @@ class _TodayState extends State<Today> {
                                         type: PageTransitionType.rightToLeft,
                                         duration: Duration(milliseconds: 400),
                                         child: ActionDetails(
+                                          change: product[index]['change'],
                                           actionCompleteDate: product[index]['date'].toString(),
                                           cartId: product[index]['id'].toString(),
                                           ggTotal: product[index]['grand_total'].toString(),
@@ -203,7 +212,7 @@ class _TodayState extends State<Today> {
                                   children: [
                                     Row(
                                       children: [
-                                        product[index]['grand_total'] != 0
+                                        product[index]['is_expense'] != "1"
                                             ? Icon(
                                                 Icons.arrow_circle_down,
                                                 size: 30,
@@ -220,7 +229,7 @@ class _TodayState extends State<Today> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "Transaction",
+                                                product[index]['is_expense'] == "1" ? "${product[index]['note']}" : "Transaction",
                                                 style: TextStyle(fontSize: 13.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
                                               ),
                                               Text(
@@ -233,10 +242,14 @@ class _TodayState extends State<Today> {
                                       ],
                                     ),
                                     Text(
-                                      "${product[index]['grand_total']}",
+                                      product[index]['is_revenue'] == "1"
+                                          ? "$currency ${product[index]['revenue']}"
+                                          : product[index]['is_expense'] == "1"
+                                              ? "$currency ${product[index]['expense']}"
+                                              : "$currency ${product[index]['grand_total']}",
                                       style: TextStyle(
                                           fontSize: 13.sp,
-                                          color: product[index]['grand_total'] != 0 ? Color.fromARGB(255, 94, 182, 255) : red,
+                                          color: product[index]['is_expense'] != "1" ? Color.fromARGB(255, 94, 182, 255) : red,
                                           fontWeight: FontWeight.normal),
                                     )
                                   ],

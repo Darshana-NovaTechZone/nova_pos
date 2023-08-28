@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nova_pos/Screens/home/navigation.dart';
 import '../../db/sqldb.dart';
 import '../onboarding/onboarding.dart';
 
@@ -64,6 +65,7 @@ class _SplashState extends State<Splash> {
   // }
   addunit() async {
     List data = await sqlDb.readData("Select * from add_unit");
+    List userStatus = await sqlDb.readData("Select * from home ");
     if (data.isEmpty) {
       dataList.forEach((element) async {
         var res = await sqlDb.insertData('INSERT INTO add_unit ("name","status") VALUES("${element["name"]}","${element["status"]}")');
@@ -71,15 +73,27 @@ class _SplashState extends State<Splash> {
         print(element["status"]);
       });
     }
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Onboarding()),
-        );
-      },
-    );
+    if (userStatus.isEmpty) {
+      Future.delayed(
+        const Duration(seconds: 2),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Onboarding()),
+          );
+        },
+      );
+    } else {
+      Future.delayed(
+        const Duration(seconds: 2),
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Navigation()),
+          );
+        },
+      );
+    }
 
     data = await sqlDb.readData("Select * from add_unit");
     print(data);
@@ -99,7 +113,7 @@ class _SplashState extends State<Splash> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Color(0xffe1f6f4),
+      backgroundColor: Color.fromARGB(255, 112, 194, 186),
       body: SizedBox(
           width: w,
           height: h,
@@ -110,7 +124,7 @@ class _SplashState extends State<Splash> {
                   height: h / 4,
                   child: Center(
                     child: Image.asset(
-                      'assets/Capture.PNG',
+                      'assets/logo.png',
                     ),
                   )),
             ],

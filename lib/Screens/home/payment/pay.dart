@@ -14,17 +14,15 @@ import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:sizer/sizer.dart';
 import 'package:path/path.dart';
 
-import '../../../class/curruncy.dart';
 import '../../../db/sqldb.dart';
 import '../../../widgets/mainButton.dart';
-import '../oders/add_transaction/add_transaction.dart';
-import '../product/add_unit/add_unit.dart';
-import '../product/dropdown/select_category.dart';
 
 class Pay extends StatefulWidget {
-  const Pay({super.key, required this.summery, required this.total});
+  const Pay({super.key, required this.summery, required this.total, required this.is_revenue, required this.cost});
   final List<ListItem> summery;
   final int total;
+  final bool is_revenue;
+  final int cost;
 
   @override
   State<Pay> createState() => _PayState();
@@ -865,6 +863,8 @@ class _PayState extends State<Pay> with SingleTickerProviderStateMixin {
                               type: PageTransitionType.rightToLeft,
                               duration: Duration(milliseconds: 400),
                               child: Receipt(
+                                  cost: widget.cost,
+                                  is_revenue: widget.is_revenue,
                                   payment: pay.toString(),
                                   rest: duePrice.toString(),
                                   total: widget.total.toString(),

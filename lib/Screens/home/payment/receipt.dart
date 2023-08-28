@@ -12,12 +12,22 @@ import '../oders/add_transaction/add_transaction.dart';
 import 'print/print.dart';
 
 class Receipt extends StatefulWidget {
-  const Receipt({super.key, required this.payment, required this.rest, required this.total, required this.change, required this.summery});
+  const Receipt(
+      {super.key,
+      required this.payment,
+      required this.rest,
+      required this.total,
+      required this.change,
+      required this.summery,
+      required this.is_revenue,
+      required this.cost});
   final String total;
   final String payment;
   final String rest;
   final bool change;
   final List<ListItem> summery;
+  final bool is_revenue;
+  final int cost;
 
   @override
   State<Receipt> createState() => _ReceiptState();
@@ -228,9 +238,13 @@ class _ReceiptState extends State<Receipt> {
     String date = DateFormat('d MMM,h:mm a').format(now);
 
     var transId;
-
-    transId = await sqlDb.insertData(
-        'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense") VALUES ("$date","Nova-Pos/$formattedDate-lk","-","${widget.total.toString()}","${widget.total.toString()}","${widget.payment}","${widget.change}","${widget.rest}","0")');
+    if (widget.is_revenue) {
+      transId = await sqlDb.insertData(
+          'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense","is_revenue","expense","revenue","cost") VALUES ("$date","Nova-Pos/$formattedDate-lk","-","0","0","0","0","0","0","1","0","${widget.total.toString()}","${widget.cost}")');
+    } else {
+      transId = await sqlDb.insertData(
+          'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense","is_revenue","expense","revenue","cost") VALUES ("$date","Nova-Pos/$formattedDate-lk","-","${widget.total.toString()}","${widget.total.toString()}","${widget.payment}","${widget.rest}","${widget.change}","0","0","0","0","${widget.cost}")');
+    }
 
     print(transId);
     List.generate(widget.summery.length, (index) async {

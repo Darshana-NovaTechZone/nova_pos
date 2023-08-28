@@ -15,7 +15,7 @@ class AddRevenue extends StatefulWidget {
 
 class _AddRevenueState extends State<AddRevenue> {
   TextEditingController sPrice = TextEditingController();
-  TextEditingController pCost = TextEditingController();
+  TextEditingController pCost = TextEditingController(text: "0");
   final _formKey = GlobalKey<FormState>();
 
   String _inputValue = '';
@@ -45,7 +45,7 @@ class _AddRevenueState extends State<AddRevenue> {
         appBar: AppBar(
           backgroundColor: Color(0xff93dc8a),
           title: Text(
-            "Add Expense",
+            "Add Revenue",
             style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.normal),
           ),
           leading: IconButton(
@@ -186,6 +186,7 @@ class _AddRevenueState extends State<AddRevenue> {
               buttonHeight: h / 13,
               color: Color.fromARGB(255, 104, 234, 108),
               onTap: () {
+                int cost = int.parse(pCost.text);
                 // Replace with your numeric string
                 if (sPrice.text.isNotEmpty) {
                   int total = int.parse(sPrice.text);
@@ -194,7 +195,7 @@ class _AddRevenueState extends State<AddRevenue> {
                     PageTransition(
                         type: PageTransitionType.rightToLeft,
                         duration: Duration(milliseconds: 400),
-                        child: Pay(summery: [], total: total),
+                        child: Pay(summery: [], total: total, is_revenue: true, cost: cost),
                         inheritTheme: true,
                         ctx: context),
                   );

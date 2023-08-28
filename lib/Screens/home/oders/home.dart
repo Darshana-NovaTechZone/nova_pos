@@ -9,6 +9,7 @@ import 'package:nova_pos/class/model/list_item_model.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../curruncy/curruncy.dart';
 import '../../../db/sqldb.dart';
 import '../add_expense/add_revenue/add_revenue.dart';
 
@@ -272,7 +273,7 @@ class _HomeState extends State<Home> {
                                                 ),
                                                 FittedBox(
                                                   child: Text(
-                                                    "\$${cartList[index]['price']}",
+                                                    "$currency ${cartList[index]['price']}",
                                                     style: TextStyle(fontSize: 9.sp, color: Color(0xff626a7c)),
                                                   ),
                                                 ),

@@ -6,6 +6,7 @@ import 'package:nova_pos/Screens/home/product/add_category.dart';
 import 'package:nova_pos/Screens/home/product/edit_product/edit_product.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
+import '../../../curruncy/curruncy.dart';
 import '../../../db/sqldb.dart';
 import 'add_product.dart';
 
@@ -245,7 +246,7 @@ class _ProductState extends State<Product> {
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
                                           Text(
-                                            "\$ ${product[index]['sales_prise']}",
+                                            "$currency ${product[index]['sales_prise']}",
                                             style: TextStyle(fontSize: 12.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
                                           ),
                                           Text(

@@ -9,6 +9,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:sizer/sizer.dart';
 import 'package:path/path.dart';
 import '../../../class/modal.dart';
+import '../../../curruncy/curruncy.dart';
 import '../../../db/sqldb.dart';
 import '../../../widgets/mainButton.dart';
 import '../payment/receipt.dart';
@@ -26,7 +27,8 @@ class ActionDetails extends StatefulWidget {
       required this.propit,
       required this.inDate,
       required this.actionCompleteDate,
-      required this.note});
+      required this.note,
+      required this.change,});
   final String cartId;
 
   final String inDate;
@@ -39,6 +41,8 @@ class ActionDetails extends StatefulWidget {
   final String pCost;
   final String propit;
   final String actionCompleteDate;
+  final String change;
+ 
 
   @override
   State<ActionDetails> createState() => _ActionDetailsState();
@@ -92,8 +96,10 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
       ];
       addcartList.addAll(cart);
     });
-    int c = int.parse(widget.sgTotal);
-    profit = c - cost;
+    int producPrice = int.parse(widget.sgTotal);
+    int change = int.parse(widget.change);
+
+    profit = (producPrice - change) - cost;
     print(cost);
     setState(() {
       profit;
@@ -361,7 +367,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                       style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                                     ),
                                     Text(
-                                      "\$${widget.sgTotal}",
+                                      "$currency ${widget.sgTotal}",
                                       style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -380,7 +386,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(7), color: Colors.green),
                                       child: Text(
-                                        "\$${widget.ggTotal}",
+                                        "$currency ${widget.ggTotal}",
                                         style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.bold),
                                       ),
                                     ),
@@ -410,7 +416,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                       style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                                     ),
                                     Text(
-                                      "\$${widget.payment}",
+                                      "$currency ${widget.payment}",
                                       style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -422,11 +428,11 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "Total Paid",
+                                      "Change",
                                       style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                                     ),
                                     Text(
-                                      "\$0",
+                                      "$currency ${widget.change}",
                                       style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -442,7 +448,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                       style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                                     ),
                                     Text(
-                                      "PAID",
+                                      widget.status == "true" ? "PAID" : "UNSETTLED",
                                       style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -473,11 +479,11 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Grsnd Total",
+                                "Grand Total",
                                 style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                "\$${widget.ggTotal}",
+                                "$currency ${widget.ggTotal}",
                                 style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                               ),
                             ],
@@ -493,7 +499,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                 style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                "\$0",
+                                "$currency ${widget.payment}",
                                 style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                               ),
                             ],
@@ -509,7 +515,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                 style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                "\$$cost",
+                                "$currency $cost",
                                 style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                               ),
                             ],
@@ -525,7 +531,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                 style: TextStyle(color: Colors.brown, fontSize: 9.sp, fontWeight: FontWeight.w600),
                               ),
                               Text(
-                                profit.toString(),
+                                "$currency ${profit.toString()}",
                                 style: TextStyle(color: Colors.brown, fontSize: 13.sp, fontWeight: FontWeight.w600),
                               ),
                             ],
@@ -607,7 +613,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                                       SizedBox(
                                                         width: 8,
                                                       ),
-                                                      Text("\$${addcartList[index].pcs}",
+                                                      Text("$currency ${addcartList[index].pcs}",
                                                           style: TextStyle(
                                                             fontSize: 8.sp,
                                                             color: Color(0xff7c7c7c),
@@ -633,7 +639,7 @@ class _ActionDetailsState extends State<ActionDetails> with SingleTickerProvider
                                                   SizedBox(
                                                     width: 8,
                                                   ),
-                                                  Text("\$${addcartList[index].cartP}",
+                                                  Text("$currency ${addcartList[index].cartP}",
                                                       style: TextStyle(
                                                         fontSize: 12.sp,
                                                         color: Color.fromARGB(255, 56, 192, 213),

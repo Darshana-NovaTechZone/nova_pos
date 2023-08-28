@@ -162,7 +162,7 @@ class _ExpenceReceiptState extends State<ExpenceReceipt> {
     var transId;
 
     transId = await sqlDb.insertData(
-        'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense") VALUES ("$date","Nova-Pos/$formattedDate-lk","${widget.note}","${widget.nominal}","${widget.nominal}","${widget.nominal}","${widget.nominal}","0","1")');
+        'INSERT INTO trance_action_expense("date","r_id","note","sub_total","grand_total","payment","change","status","is_expense","is_revenue","expense","revenue","cost") VALUES ("$date","Nova-Pos/$formattedDate-lk","${widget.note}","0","0","0","0","true","1","0","${widget.nominal}","0","0")');
 
     print(transId);
 

@@ -11,6 +11,7 @@ import 'package:nova_pos/color/colors.dart';
 import 'package:nova_pos/widgets/mainButton.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../db/sqldb.dart';
 import '../../widgets/home_button.dart';
 import 'oders/home.dart';
 import 'menu.dart';
@@ -27,6 +28,7 @@ class _NavigationState extends State<Navigation> with SingleTickerProviderStateM
 
   late AnimationController animationController;
   late Animation<double> animation;
+  SqlDb sqlDb = SqlDb();
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.w600, color: black);
   static const List<Widget> _widgetOptions = <Widget>[
     Home(),
@@ -41,8 +43,23 @@ class _NavigationState extends State<Navigation> with SingleTickerProviderStateM
   bool button5 = false;
   bool page = false;
   int x = 0;
+
+  userComeHome() async {
+    List userStatus = await sqlDb.readData("Select * from home ");
+    if (userStatus.isEmpty) {
+      var res = await sqlDb.insertData('INSERT INTO home ("status") VALUES("1")');
+      print(res);
+    } else {
+      setState(() {
+        page = true;
+      });
+    }
+    print(userStatus);
+  }
+
   @override
   void initState() {
+    userComeHome();
     super.initState();
     animationController = AnimationController(
       vsync: this,

@@ -14,6 +14,7 @@ import 'package:nova_pos/color/colors.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:sizer/sizer.dart';
+import '../../../../curruncy/curruncy.dart';
 import '../../../../db/sqldb.dart';
 import '../../../../widgets/mainButton.dart';
 import '../../../../widgets/main_button2.dart';
@@ -51,6 +52,7 @@ class _AddTransactionState extends State<AddTransaction> {
   int item = 0;
   int addItem = 0;
   int cost = 0;
+  int tempCost = 0;
   ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
   loadData() async {
     allProduct = await sqlDb.readData("Select * from add_product ");
@@ -256,6 +258,7 @@ class _AddTransactionState extends State<AddTransaction> {
                               dragStartBehavior: DragStartBehavior.down,
                               itemCount: product.length,
                               itemBuilder: (context, index) {
+                                print(index);
                                 String str = product[index]['sales_prise'];
 
                                 String substr = ",";
@@ -291,7 +294,11 @@ class _AddTransactionState extends State<AddTransaction> {
                                     x = int.parse(pPrice);
                                     y += x;
                                     x = y;
+                                    cost = int.parse(product[index]['product_cost']);
 
+                                    tempCost += cost;
+                                    cost = tempCost;
+                                    print(cost);
                                     // Update items with the same ID
                                     for (var newItem in cart) {
                                       var existingItem = tempCart.firstWhere((item) {
@@ -363,7 +370,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  "\$ ${product[index]['sales_prise']}",
+                                                  "$currency ${product[index]['sales_prise']}",
                                                   style: TextStyle(fontSize: 12.sp, color: Color(0xff7c7c7c), fontWeight: FontWeight.bold),
                                                 ),
                                                 Text(
@@ -455,7 +462,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                                   color: Color(0xff7c7c7c),
                                                   fontWeight: FontWeight.bold,
                                                 )),
-                                            Text(tempCart[index].cartP.toString(),
+                                            Text("$currency ${tempCart[index].cartP.toString()}",
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
                                                   color: Color(0xff7c7c7c),
@@ -482,7 +489,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                                 SizedBox(
                                                   width: 8,
                                                 ),
-                                                Text(tempCart[index].pcs,
+                                                Text("$currency ${tempCart[index].pcs}",
                                                     style: TextStyle(
                                                       fontSize: 8.sp,
                                                       color: Color(0xff7c7c7c),
@@ -555,7 +562,7 @@ class _AddTransactionState extends State<AddTransaction> {
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
                               duration: Duration(milliseconds: 400),
-                              child: Pay(summery: tempCart, total: x),
+                              child: Pay(summery: tempCart, total: x, is_revenue: false, cost: cost),
                               inheritTheme: true,
                               ctx: context),
                         );
@@ -564,7 +571,7 @@ class _AddTransactionState extends State<AddTransaction> {
                       // _expansionStatus = key.currentState!.expansionStatus;
                     });
                   },
-                  text: "$price",
+                  text: "$currency $price",
                   width: w / 1.5,
                 ),
               ),
